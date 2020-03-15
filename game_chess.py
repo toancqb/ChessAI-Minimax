@@ -62,7 +62,9 @@ class Game():
                 if eq(st[0], pos_clicked):
                     cl -= 1
                     continue
-                pieces.move(st[0], pos_clicked)
+                if not pieces.move(st[0], pos_clicked):
+                    cl -= 1
+                    continue
                 cl = -1
                 st = []
                 print_ar(pieces.ar)

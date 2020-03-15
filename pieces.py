@@ -56,6 +56,9 @@ class Pieces(pygame.sprite.Sprite):
                 if self.ar[i][j] != '  ':
                     if self.ar[i][j] == '..':
                         pygame.draw.circle(self.screen, RED, cal_rect(0, i+1, j+1), CIRCLE_RADIUS)
+                    elif self.ar[i][j][0] == '.':
+                        self.P[self.ar[i][j][1:]].rect = cal_rect(1, i+1,j+1)
+                        self.screen.blit(self.P[self.ar[i][j][1:]].surf, cal_rect(1, i+1,j+1))
                     else:
                         self.P[self.ar[i][j]].rect = cal_rect(1, i+1,j+1)
                         self.screen.blit(self.P[self.ar[i][j]].surf, cal_rect(1, i+1,j+1))
@@ -69,12 +72,15 @@ class Pieces(pygame.sprite.Sprite):
         for i in index:
             nx, ny = x+i[0], y+i[1]
             if check_valid(nx, ny):
-                if self.ar[nx][ny] == '  ':
+                if self.ar[nx][ny] == '  ' or self.ar[x][y][0] != self.ar[nx][ny][0]:
                     lst.append((nx, ny))
 
         if lst != []:
             for i in lst:
-                self.ar[i[0]][i[1]] = '..'
+                if self.ar[i[0]][i[1]] != '  ':
+                    self.ar[i[0]][i[1]] = '.' + self.ar[i[0]][i[1]]
+                else:
+                    self.ar[i[0]][i[1]] = '..'
 
     def available_moves(self, pc, p, type):
         return self.P[pc].a_moves(self.ar, p, type)
@@ -82,13 +88,19 @@ class Pieces(pygame.sprite.Sprite):
 
 
     def move(self, r, rr):
-        a, b, c, d = r[0], r[1], rr[0], rr[1]
-        self.ar[c-1][d-1] = deepcopy(self.ar[a-1][b-1])
-        self.ar[a-1][b-1] = '  '
+        a, b, c, d = r[0]-1, r[1]-1, rr[0]-1, rr[1]-1
+        if self.ar[c][d][0] == '.':
+            self.ar[c][d] = deepcopy(self.ar[a][b])
+            self.ar[a][b] = '  '
+        else:
+            return 0
         for i in range(8):
             for j in range(8):
                 if self.ar[i][j] == '..':
                     self.ar[i][j] = '  '
+                if self.ar[i][j][:2] == '.w' or self.ar[i][j][:2] == '.b':
+                    self.ar[i][j] = self.ar[i][j][1:]
+        return 1
 
     def precond(self, p):
         if self.ar[p[0]-1][p[1]-1] != '  ':
@@ -112,6 +124,7 @@ class King(pygame.sprite.Sprite):
             if check_valid(x+i[0], y+i[1]):
                 if ar[x][y] == '  ':
                     lst.append((x+i[0], y+i[1]))
+                # if ar[x][y][0]
         return lst
 
 class Queen(King):
