@@ -62,10 +62,19 @@ class Pieces(pygame.sprite.Sprite):
 
     def selecting(self, p):
         x, y = p[0]-1, p[1]-1
-        lst = self.available_moves(self.ar[x][y], p, self.ar[x][y][0])
+        #lst = self.available_moves(self.ar[x][y], p, self.ar[x][y][0])
+
+        lst = []
+        index = [(-1,-1), (-1,0), (-1,1), (0,1), (1,1), (1,0), (1,-1), (0,-1)]
+        for i in index:
+            nx, ny = x+i[0], y+i[1]
+            if check_valid(nx, ny):
+                if self.ar[nx][ny] == '  ':
+                    lst.append((nx, ny))
+
         if lst != []:
             for i in lst:
-                self.ar[x][y] = '..'
+                self.ar[i[0]][i[1]] = '..'
 
     def available_moves(self, pc, p, type):
         return self.P[pc].a_moves(self.ar, p, type)
@@ -76,6 +85,10 @@ class Pieces(pygame.sprite.Sprite):
         a, b, c, d = r[0], r[1], rr[0], rr[1]
         self.ar[c-1][d-1] = deepcopy(self.ar[a-1][b-1])
         self.ar[a-1][b-1] = '  '
+        for i in range(8):
+            for j in range(8):
+                if self.ar[i][j] == '..':
+                    self.ar[i][j] = '  '
 
     def precond(self, p):
         if self.ar[p[0]-1][p[1]-1] != '  ':
