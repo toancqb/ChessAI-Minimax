@@ -3,6 +3,7 @@ import os.path
 
 
 from pygame.locals import (
+    MOUSEBUTTONDOWN,
     RLEACCEL,
     QUIT,
 )
@@ -11,6 +12,7 @@ SCREEN_WIDTH = 500
 SCREEN_HEIGHT = 500
 SCREEN_SIZE = 500
 PIECE_SIZE = 50
+CIRCLE_RADIUS = 7
 
 BLACK = (0, 0, 0)
 ORANGE = (181, 101, 29)

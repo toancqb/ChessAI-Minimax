@@ -1,6 +1,8 @@
 import pygame
 import os.path
+from copy import deepcopy
 from define import *
+from tools import *
 
 
 class Pieces(pygame.sprite.Sprite):
@@ -31,19 +33,19 @@ class Pieces(pygame.sprite.Sprite):
 
     def init_surf_pieces(self):
         self.P = {
-            'br': Rook(B['rook'], (0, 0)),
-            'bn': Knight(B['knight'], (0, 0)),
-            'bb': Bishop(B['bishop'], (0, 0)),
-            'bq': Queen(B['queen'], (0, 0)),
-            'bk': King(B['king'], (0, 0)),
-            'bp': Pawn(B['pawn'], (0, 0)),
+            'br': Rook(B['rook'], None, 'b'),
+            'bn': Knight(B['knight'], None, 'b'),
+            'bb': Bishop(B['bishop'], None, 'b'),
+            'bq': Queen(B['queen'], None, 'b'),
+            'bk': King(B['king'], None, 'b'),
+            'bp': Pawn(B['pawn'], None, 'b'),
 
-            'wr': Rook(W['rook'], (0, 0)),
-            'wn': Knight(W['knight'], (0, 0)),
-            'wb': Bishop(W['bishop'], (0, 0)),
-            'wq': Queen(W['queen'], (0, 0)),
-            'wk': King(W['king'], (0, 0)),
-            'wp': Pawn(W['pawn'], (0, 0)),
+            'wr': Rook(W['rook'], None, 'w'),
+            'wn': Knight(W['knight'], None, 'w'),
+            'wb': Bishop(W['bishop'], None, 'w'),
+            'wq': Queen(W['queen'], None, 'w'),
+            'wk': King(W['king'], None, 'w'),
+            'wp': Pawn(W['pawn'], None, 'w'),
 
             '  ': None
         }
@@ -51,67 +53,116 @@ class Pieces(pygame.sprite.Sprite):
     def draw_pieces(self):
         for i in range(8):
             for j in range(8):
-                if self.P[self.ar[i][j]] != None:
-                    self.screen.blit(self.P[self.ar[i][j]].surf, self.cal_rect(i+1,j+1))
+                if self.ar[i][j] != '  ':
+                    if self.ar[i][j] == '..':
+                        pygame.draw.circle(self.screen, RED, cal_rect(0, i+1, j+1), CIRCLE_RADIUS)
+                    else:
+                        self.P[self.ar[i][j]].rect = cal_rect(1, i+1,j+1)
+                        self.screen.blit(self.P[self.ar[i][j]].surf, cal_rect(1, i+1,j+1))
 
-    def move(self):
-        self.ar[6][4] = '  '
-        self.ar[4][4] = 'wp'
+    def selecting(self, p):
+        x, y = p[0]-1, p[1]-1
+        lst = self.available_moves(self.ar[x][y], p, self.ar[x][y][0])
+        if lst != []:
+            for i in lst:
+                self.ar[x][y] = '..'
 
-    def cal_rect(self, rect0, rect1):
-        return (rect1 * PIECE_SIZE, rect0 * PIECE_SIZE, )
+    def available_moves(self, pc, p, type):
+        return self.P[pc].a_moves(self.ar, p, type)
+
+
+
+    def move(self, r, rr):
+        a, b, c, d = r[0], r[1], rr[0], rr[1]
+        self.ar[c-1][d-1] = deepcopy(self.ar[a-1][b-1])
+        self.ar[a-1][b-1] = '  '
+
+    def precond(self, p):
+        if self.ar[p[0]-1][p[1]-1] != '  ':
+            return True
+        return False
 
 class King(pygame.sprite.Sprite):
 
-    def __init__(self, surf, rect):
+    def __init__(self, surf, rect, type):
         super(King, self).__init__()
         self.surf = surf
         self.surf.set_colorkey(BLACK, RLEACCEL)
         self.surf = pygame.transform.scale(self.surf, (PIECE_SIZE, PIECE_SIZE))
         self.rect = rect
+        self.type = type
+
+    def a_moves(self, ar, p, type):
+        x, y, lst = p[0]-1, p[1]-1, []
+        index = ((-1,-1), (-1,0), (-1,1), (0,1), (1,1), (1,0), (1,-1), (0,-1))
+        for i in index:
+            if check_valid(x+i[0], y+i[1]):
+                if ar[x][y] == '  ':
+                    lst.append((x+i[0], y+i[1]))
+        return lst
+
+class Queen(King):
+    def __init__(self, surf, rect, type):
+        super(Queen, self).__init__(surf, rect, type)
+
+    def a_moves(self, ar, p, type):
+        x, y, lst = p[0]-1, p[1]-1, []
+        index = ((-1,-1), (-1,0), (-1,1), (0,1), (1,1), (1,0), (1,-1), (0,-1))
+        for i in index:
+            if check_valid(x+i[0], y+i[1]):
+                if ar[x][y] == '  ':
+                    lst.append((x+i[0], y+i[1]))
+        return lst
 
 
-class Queen(pygame.sprite.Sprite):
+class Bishop(King):
+    def __init__(self, surf, rect, type):
+        super(Bishop, self).__init__(surf, rect, type)
 
-    def __init__(self, surf, rect):
-        super(Queen, self).__init__()
-        self.surf = surf
-        self.surf.set_colorkey(BLACK, RLEACCEL)
-        self.surf = pygame.transform.scale(self.surf, (PIECE_SIZE, PIECE_SIZE))
-        self.rect = rect
+    def a_moves(self, ar, p, type):
+        x, y, lst = p[0]-1, p[1]-1, []
+        index = ((-1,-1), (-1,0), (-1,1), (0,1), (1,1), (1,0), (1,-1), (0,-1))
+        for i in index:
+            if check_valid(x+i[0], y+i[1]):
+                if ar[x][y] == '  ':
+                    lst.append((x+i[0], y+i[1]))
+        return lst
 
-class Rook(pygame.sprite.Sprite):
+class Rook(King):
+    def __init__(self, surf, rect, type):
+        super(Rook, self).__init__(surf, rect, type)
 
-    def __init__(self, surf, rect):
-        super(Rook, self).__init__()
-        self.surf = surf
-        self.surf.set_colorkey(BLACK, RLEACCEL)
-        self.surf = pygame.transform.scale(self.surf, (PIECE_SIZE, PIECE_SIZE))
-        self.rect = rect
+    def a_moves(self, ar, p, type):
+        x, y, lst = p[0]-1, p[1]-1, []
+        index = ((-1,-1), (-1,0), (-1,1), (0,1), (1,1), (1,0), (1,-1), (0,-1))
+        for i in index:
+            if check_valid(x+i[0], y+i[1]):
+                if ar[x][y] == '  ':
+                    lst.append((x+i[0], y+i[1]))
+        return lst
 
-class Bishop(pygame.sprite.Sprite):
+class Knight(King):
+    def __init__(self, surf, rect, type):
+        super(Knight, self).__init__(surf, rect, type)
 
-    def __init__(self, surf, rect):
-        super(Bishop, self).__init__()
-        self.surf = surf
-        self.surf.set_colorkey(BLACK, RLEACCEL)
-        self.surf = pygame.transform.scale(self.surf, (PIECE_SIZE, PIECE_SIZE))
-        self.rect = rect
+    def a_moves(self, ar, p, type):
+        x, y, lst = p[0]-1, p[1]-1, []
+        index = ((-1,-1), (-1,0), (-1,1), (0,1), (1,1), (1,0), (1,-1), (0,-1))
+        for i in index:
+            if check_valid(x+i[0], y+i[1]):
+                if ar[x][y] == '  ':
+                    lst.append((x+i[0], y+i[1]))
+        return lst
 
-class Knight(pygame.sprite.Sprite):
+class Pawn(King):
+    def __init__(self, surf, rect, type):
+        super(Pawn, self).__init__(surf, rect, type)
 
-    def __init__(self, surf, rect):
-        super(Knight, self).__init__()
-        self.surf = surf
-        self.surf.set_colorkey(BLACK, RLEACCEL)
-        self.surf = pygame.transform.scale(self.surf, (PIECE_SIZE, PIECE_SIZE))
-        self.rect = rect
-
-class Pawn(pygame.sprite.Sprite):
-
-    def __init__(self, surf, rect):
-        super(Pawn, self).__init__()
-        self.surf = surf
-        self.surf.set_colorkey(BLACK, RLEACCEL)
-        self.surf = pygame.transform.scale(self.surf, (PIECE_SIZE, PIECE_SIZE))
-        self.rect = rect
+    def a_moves(self, ar, p, type):
+        x, y, lst = p[0]-1, p[1]-1, []
+        index = ((-1,-1), (-1,0), (-1,1), (0,1), (1,1), (1,0), (1,-1), (0,-1))
+        for i in index:
+            if check_valid(x+i[0], y+i[1]):
+                if ar[x][y] == '  ':
+                    lst.append((x+i[0], y+i[1]))
+        return lst

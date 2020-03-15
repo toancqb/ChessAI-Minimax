@@ -55,3 +55,49 @@ def init_surf_pieces(self):
 
         '  ': None
     }
+
+
+# class Queen(pygame.sprite.Sprite):
+#
+#     def __init__(self, surf, rect):
+#         super(Queen, self).__init__()
+#         self.surf = surf
+#         self.surf.set_colorkey(BLACK, RLEACCEL)
+#         self.surf = pygame.transform.scale(self.surf, (PIECE_SIZE, PIECE_SIZE))
+#         self.rect = rect
+#
+# class Rook(pygame.sprite.Sprite):
+#
+#     def __init__(self, surf, rect):
+#         super(Rook, self).__init__()
+#         self.surf = surf
+#         self.surf.set_colorkey(BLACK, RLEACCEL)
+#         self.surf = pygame.transform.scale(self.surf, (PIECE_SIZE, PIECE_SIZE))
+#         self.rect = rect
+#
+# class Bishop(pygame.sprite.Sprite):
+#
+#     def __init__(self, surf, rect):
+#         super(Bishop, self).__init__()
+#         self.surf = surf
+#         self.surf.set_colorkey(BLACK, RLEACCEL)
+#         self.surf = pygame.transform.scale(self.surf, (PIECE_SIZE, PIECE_SIZE))
+#         self.rect = rect
+#
+# class Knight(pygame.sprite.Sprite):
+#
+#     def __init__(self, surf, rect):
+#         super(Knight, self).__init__()
+#         self.surf = surf
+#         self.surf.set_colorkey(BLACK, RLEACCEL)
+#         self.surf = pygame.transform.scale(self.surf, (PIECE_SIZE, PIECE_SIZE))
+#         self.rect = rect
+#
+# class Pawn(pygame.sprite.Sprite):
+#
+#     def __init__(self, surf, rect):
+#         super(Pawn, self).__init__()
+#         self.surf = surf
+#         self.surf.set_colorkey(BLACK, RLEACCEL)
+#         self.surf = pygame.transform.scale(self.surf, (PIECE_SIZE, PIECE_SIZE))
+#         self.rect = rect
