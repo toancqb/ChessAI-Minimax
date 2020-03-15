@@ -65,15 +65,7 @@ class Pieces(pygame.sprite.Sprite):
 
     def selecting(self, p):
         x, y = p[0]-1, p[1]-1
-        #lst = self.available_moves(self.ar[x][y], p, self.ar[x][y][0])
-
-        lst = []
-        index = [(-1,-1), (-1,0), (-1,1), (0,1), (1,1), (1,0), (1,-1), (0,-1)]
-        for i in index:
-            nx, ny = x+i[0], y+i[1]
-            if check_valid(nx, ny):
-                if self.ar[nx][ny] == '  ' or self.ar[x][y][0] != self.ar[nx][ny][0]:
-                    lst.append((nx, ny))
+        lst = self.available_moves(self.ar[x][y], p, self.ar[x][y][0])
 
         if lst != []:
             for i in lst:
@@ -119,12 +111,12 @@ class King(pygame.sprite.Sprite):
 
     def a_moves(self, ar, p, type):
         x, y, lst = p[0]-1, p[1]-1, []
-        index = ((-1,-1), (-1,0), (-1,1), (0,1), (1,1), (1,0), (1,-1), (0,-1))
+        index = [(-1,-1), (-1,0), (-1,1), (0,1), (1,1), (1,0), (1,-1), (0,-1)]
         for i in index:
-            if check_valid(x+i[0], y+i[1]):
-                if ar[x][y] == '  ':
-                    lst.append((x+i[0], y+i[1]))
-                # if ar[x][y][0]
+            nx, ny = x+i[0], y+i[1]
+            if check_valid(nx, ny):
+                if ar[nx][ny] == '  ' or ar[x][y][0] != ar[nx][ny][0]:
+                    lst.append((nx, ny))
         return lst
 
 class Queen(King):
@@ -133,11 +125,12 @@ class Queen(King):
 
     def a_moves(self, ar, p, type):
         x, y, lst = p[0]-1, p[1]-1, []
-        index = ((-1,-1), (-1,0), (-1,1), (0,1), (1,1), (1,0), (1,-1), (0,-1))
+        index = [(-1,-1), (-1,0), (-1,1), (0,1), (1,1), (1,0), (1,-1), (0,-1)]
         for i in index:
-            if check_valid(x+i[0], y+i[1]):
-                if ar[x][y] == '  ':
-                    lst.append((x+i[0], y+i[1]))
+            nx, ny = x+i[0], y+i[1]
+            if check_valid(nx, ny):
+                if ar[nx][ny] == '  ' or ar[x][y][0] != ar[nx][ny][0]:
+                    lst.append((nx, ny))
         return lst
 
 
@@ -147,11 +140,12 @@ class Bishop(King):
 
     def a_moves(self, ar, p, type):
         x, y, lst = p[0]-1, p[1]-1, []
-        index = ((-1,-1), (-1,0), (-1,1), (0,1), (1,1), (1,0), (1,-1), (0,-1))
+        index = [(-1,-1), (-1,0), (-1,1), (0,1), (1,1), (1,0), (1,-1), (0,-1)]
         for i in index:
-            if check_valid(x+i[0], y+i[1]):
-                if ar[x][y] == '  ':
-                    lst.append((x+i[0], y+i[1]))
+            nx, ny = x+i[0], y+i[1]
+            if check_valid(nx, ny):
+                if ar[nx][ny] == '  ' or ar[x][y][0] != ar[nx][ny][0]:
+                    lst.append((nx, ny))
         return lst
 
 class Rook(King):
@@ -160,11 +154,12 @@ class Rook(King):
 
     def a_moves(self, ar, p, type):
         x, y, lst = p[0]-1, p[1]-1, []
-        index = ((-1,-1), (-1,0), (-1,1), (0,1), (1,1), (1,0), (1,-1), (0,-1))
+        index = [(-1,-1), (-1,0), (-1,1), (0,1), (1,1), (1,0), (1,-1), (0,-1)]
         for i in index:
-            if check_valid(x+i[0], y+i[1]):
-                if ar[x][y] == '  ':
-                    lst.append((x+i[0], y+i[1]))
+            nx, ny = x+i[0], y+i[1]
+            if check_valid(nx, ny):
+                if ar[nx][ny] == '  ' or ar[x][y][0] != ar[nx][ny][0]:
+                    lst.append((nx, ny))
         return lst
 
 class Knight(King):
@@ -173,11 +168,12 @@ class Knight(King):
 
     def a_moves(self, ar, p, type):
         x, y, lst = p[0]-1, p[1]-1, []
-        index = ((-1,-1), (-1,0), (-1,1), (0,1), (1,1), (1,0), (1,-1), (0,-1))
+        index = [(-1,-1), (-1,0), (-1,1), (0,1), (1,1), (1,0), (1,-1), (0,-1)]
         for i in index:
-            if check_valid(x+i[0], y+i[1]):
-                if ar[x][y] == '  ':
-                    lst.append((x+i[0], y+i[1]))
+            nx, ny = x+i[0], y+i[1]
+            if check_valid(nx, ny):
+                if ar[nx][ny] == '  ' or ar[x][y][0] != ar[nx][ny][0]:
+                    lst.append((nx, ny))
         return lst
 
 class Pawn(King):
@@ -186,9 +182,10 @@ class Pawn(King):
 
     def a_moves(self, ar, p, type):
         x, y, lst = p[0]-1, p[1]-1, []
-        index = ((-1,-1), (-1,0), (-1,1), (0,1), (1,1), (1,0), (1,-1), (0,-1))
+        index = [(-1,-1), (-1,0), (-1,1), (0,1), (1,1), (1,0), (1,-1), (0,-1)]
         for i in index:
-            if check_valid(x+i[0], y+i[1]):
-                if ar[x][y] == '  ':
-                    lst.append((x+i[0], y+i[1]))
+            nx, ny = x+i[0], y+i[1]
+            if check_valid(nx, ny):
+                if ar[nx][ny] == '  ' or ar[x][y][0] != ar[nx][ny][0]:
+                    lst.append((nx, ny))
         return lst
