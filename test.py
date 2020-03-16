@@ -101,22 +101,19 @@ def init_surf_pieces(self):
 #         self.surf.set_colorkey(BLACK, RLEACCEL)
 #         self.surf = pygame.transform.scale(self.surf, (PIECE_SIZE, PIECE_SIZE))
 #         self.rect = rect
-
-
 def a_moves(self, ar, p, type):
     x, y, lst = p[0]-1, p[1]-1, []
-    for py in range(8):
+    for py in range(1, 8):
         if check_valid(x, y-py):
             if ar[x][y-py] == '  ':
                 lst.append((x, y-py))
-            else:
+            if ar[x][y-py] != '  ':
                 if type != ar[x][y-py][0]:
                     lst.append((x, y-py))
                 break
         else:
             break
-
-    for py in range(8):
+    for py in range(1, 8):
         if check_valid(x, y+py):
             if ar[x][y+py] == '  ':
                 lst.append((x, y+py))
@@ -126,8 +123,7 @@ def a_moves(self, ar, p, type):
                 break
         else:
             break
-
-    for px in range(8):
+    for px in range(1, 8):
         if check_valid(x-px, y):
             if ar[x-px][y] == '  ':
                 lst.append((x-px, y))
@@ -137,8 +133,7 @@ def a_moves(self, ar, p, type):
                 break
         else:
             break
-
-    for px in range(8):
+    for px in range(1, 8):
         if check_valid(x+px, y):
             if ar[x+px][y] == '  ':
                 lst.append((x+px, y))
@@ -148,4 +143,3 @@ def a_moves(self, ar, p, type):
                 break
         else:
             break
-            

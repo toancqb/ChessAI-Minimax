@@ -37,7 +37,7 @@ class Game():
         board = Board(self.screen)
         pieces = Pieces(self.screen)
 
-        #player = 0
+        player = 0 # 0 for white, 1 for black
         cl = -1
         st = []
         running = True
@@ -50,7 +50,7 @@ class Game():
                     if pygame.mouse.get_pressed()[0]:
                         pos_clicked = rev_rect(pygame.mouse.get_pos())
                         cl += 1
-                        if not pieces.precond(pos_clicked) and cl == 0:
+                        if not pieces.precond(pos_clicked, player) and cl == 0:
                             cl -= 1
                             continue
 
@@ -62,18 +62,21 @@ class Game():
                 if eq(st[0], pos_clicked):
                     cl -= 1
                     continue
+                if pieces.switch_piece(st[0], pos_clicked):
+                    cl, st = -1, []
+                    pieces.clean_selected()
+                    continue
                 if not pieces.move(st[0], pos_clicked):
                     cl -= 1
                     continue
-                cl = -1
-                st = []
+                cl, st = -1, []
+                player = 1 - player
                 print_ar(pieces.ar)
 
 
             board.draw_board()
             pieces.draw_pieces()
 
-            #player = 1 - player
             pygame.display.flip()
 
         pygame.quit()

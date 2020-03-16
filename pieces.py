@@ -77,7 +77,13 @@ class Pieces(pygame.sprite.Sprite):
     def available_moves(self, pc, p, type):
         return self.P[pc].a_moves(self.ar, p, type)
 
-
+    def clean_selected(self):
+        for i in range(8):
+            for j in range(8):
+                if self.ar[i][j] == '..':
+                    self.ar[i][j] = '  '
+                if self.ar[i][j][:2] == '.w' or self.ar[i][j][:2] == '.b':
+                    self.ar[i][j] = self.ar[i][j][1:]
 
     def move(self, r, rr):
         a, b, c, d = r[0]-1, r[1]-1, rr[0]-1, rr[1]-1
@@ -86,16 +92,22 @@ class Pieces(pygame.sprite.Sprite):
             self.ar[a][b] = '  '
         else:
             return 0
-        for i in range(8):
-            for j in range(8):
-                if self.ar[i][j] == '..':
-                    self.ar[i][j] = '  '
-                if self.ar[i][j][:2] == '.w' or self.ar[i][j][:2] == '.b':
-                    self.ar[i][j] = self.ar[i][j][1:]
+        self.clean_selected()
         return 1
 
-    def precond(self, p):
-        if self.ar[p[0]-1][p[1]-1] != '  ':
+    def switch_piece(self, a, b):
+        x, y = a[0]-1, a[1]-1
+        kx, ky = b[0]-1, b[1]-1
+        if self.ar[x][y][0] == self.ar[kx][ky][0]:
+            return True
+        return False
+
+    def precond(self, p, player):
+        if player == 0:
+            player = 'w'
+        else:
+            player = 'b'
+        if self.ar[p[0]-1][p[1]-1] != '  ' and self.ar[p[0]-1][p[1]-1][0] == player:
             return True
         return False
 
@@ -125,12 +137,20 @@ class Queen(King):
 
     def a_moves(self, ar, p, type):
         x, y, lst = p[0]-1, p[1]-1, []
-        index = [(-1,-1), (-1,0), (-1,1), (0,1), (1,1), (1,0), (1,-1), (0,-1)]
+        index = [(-1,-1), (-1,1), (1,-1), (1,1), (0,-1), (0,1), (-1,0), (1,0)]
         for i in index:
-            nx, ny = x+i[0], y+i[1]
-            if check_valid(nx, ny):
-                if ar[nx][ny] == '  ' or ar[x][y][0] != ar[nx][ny][0]:
-                    lst.append((nx, ny))
+            for pxy in range(1, 8):
+                kx, ky = x + i[0]*pxy, y + i[1]*pxy
+                if check_valid(kx, ky):
+                    if ar[kx][ky] == '  ':
+                        lst.append((kx, ky))
+                    else:
+                        if type != ar[kx][ky][0]:
+                            lst.append((kx, ky))
+                        break
+                else:
+                    break
+
         return lst
 
 
@@ -140,12 +160,20 @@ class Bishop(King):
 
     def a_moves(self, ar, p, type):
         x, y, lst = p[0]-1, p[1]-1, []
-        index = [(-1,-1), (-1,0), (-1,1), (0,1), (1,1), (1,0), (1,-1), (0,-1)]
+        index = [(-1,-1), (-1,1), (1,-1), (1,1)]
         for i in index:
-            nx, ny = x+i[0], y+i[1]
-            if check_valid(nx, ny):
-                if ar[nx][ny] == '  ' or ar[x][y][0] != ar[nx][ny][0]:
-                    lst.append((nx, ny))
+            for pxy in range(1, 8):
+                kx, ky = x + i[0]*pxy, y + i[1]*pxy
+                if check_valid(kx, ky):
+                    if ar[kx][ky] == '  ':
+                        lst.append((kx, ky))
+                    else:
+                        if type != ar[kx][ky][0]:
+                            lst.append((kx, ky))
+                        break
+                else:
+                    break
+
         return lst
 
 class Rook(King):
@@ -154,38 +182,20 @@ class Rook(King):
 
     def a_moves(self, ar, p, type):
         x, y, lst = p[0]-1, p[1]-1, []
-        for py in range(1, 8):
-            if check_valid(x, y-py):
-                if ar[x][y-py] == '  ':
-                    lst.append((x, y-py))
-                if ar[x][y-py] != '  ':
-                    if type != ar[x][y-py][0]:
-                        lst.append((x, y-py))
+        index = [(0,-1), (0,1), (-1,0), (1,0)]
+        for i in index:
+            for pxy in range(1, 8):
+                kx, ky = x + i[0]*pxy, y + i[1]*pxy
+                if check_valid(kx, ky):
+                    if ar[kx][ky] == '  ':
+                        lst.append((kx, ky))
+                    else:
+                        if type != ar[kx][ky][0]:
+                            lst.append((kx, ky))
+                        break
+                else:
                     break
-        for py in range(1, 8):
-            if check_valid(x, y+py):
-                if ar[x][y+py] == '  ':
-                    lst.append((x, y+py))
-                if ar[x][y+py] != '  ':
-                    if type != ar[x][y+py][0]:
-                        lst.append((x, y+py))
-                    break
-        for px in range(1, 8):
-            if check_valid(x-px, y):
-                if ar[x-px][y] == '  ':
-                    lst.append((x-px, y))
-                if ar[x-px][y] != '  ':
-                    if type != ar[x-px][y][0]:
-                        lst.append((x-px, y))
-                    break
-        for px in range(1, 8):
-            if check_valid(x+px, y):
-                if ar[x+px][y] == '  ':
-                    lst.append((x+px, y))
-                if ar[x+px][y] != '  ':
-                    if type != ar[x+px][y][0]:
-                        lst.append((x+px, y))
-                    break
+
         return lst
 
 class Knight(King):
