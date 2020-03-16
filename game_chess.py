@@ -13,10 +13,14 @@ class Board():
         self.color = BLUE
 
     def draw_board(self):
-        pygame.draw.rect(self.screen, self.color, (0, 0, SCREEN_SIZE, PIECE_SIZE))
-        pygame.draw.rect(self.screen, self.color, (0, 0, PIECE_SIZE, SCREEN_SIZE))
-        pygame.draw.rect(self.screen, self.color, (SCREEN_SIZE-PIECE_SIZE, 0, PIECE_SIZE, SCREEN_SIZE))
-        pygame.draw.rect(self.screen, self.color, (0, SCREEN_SIZE-PIECE_SIZE, SCREEN_SIZE-PIECE_SIZE, PIECE_SIZE))
+        pygame.draw.rect(self.screen, BLUE, (0, 0, SCREEN_SIZE, PIECE_SIZE))
+        pygame.draw.rect(self.screen, BLUE, (0, 0, PIECE_SIZE, SCREEN_SIZE))
+        pygame.draw.rect(self.screen, BLUE, (SCREEN_SIZE-PIECE_SIZE, 0, PIECE_SIZE, SCREEN_SIZE))
+        pygame.draw.rect(self.screen, BLUE, (0, SCREEN_SIZE-PIECE_SIZE, SCREEN_SIZE-PIECE_SIZE, PIECE_SIZE))
+        # pygame.draw.line(self.screen, GREEN, (PZ-WL, PZ-WL), (PZ-WL, SZ+WL), 2*WL)
+        # pygame.draw.line(self.screen, GREEN, (PZ-WL, PZ-WL), (SZ+WL, PZ-WL), 2*WL)
+        # pygame.draw.line(self.screen, GREEN, (SZ+WL, PZ-WL), (SZ+WL, SZ+WL), 2*WL)
+        # pygame.draw.line(self.screen, GREEN, (PZ-WL, SZ+WL), (SZ+WL, SZ+WL), 2*WL)
         for y in range(8):
             for x in range(8):
                 if (x + y) % 2 == 0:
@@ -34,6 +38,7 @@ class Game():
     def __init__(self):
         pygame.init()
         self.screen = pygame.display.set_mode((SCREEN_SIZE, SCREEN_SIZE))
+        self.clock = pygame.time.Clock()
         board = Board(self.screen)
         pieces = Pieces(self.screen)
 
@@ -73,12 +78,15 @@ class Game():
                 player, cl, st = 1 - player, -1, []
                 print_ar(pieces.ar)
                 print("Is Checked ? ", pieces.is_checked(cplayer[player]))
+                print("White King's Position:", pieces.P['wk'].k_pos)
+                print("Black King's Position:", pieces.P['bk'].k_pos)
 
 
             board.draw_board()
             pieces.draw_pieces()
 
             pygame.display.flip()
+            self.clock.tick(20)
 
         pygame.quit()
 

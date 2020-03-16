@@ -33,19 +33,19 @@ class Pieces(pygame.sprite.Sprite):
 
     def init_surf_pieces(self):
         self.P = {
-            'br': Rook(B['rook'], None, 'b'),
-            'bn': Knight(B['knight'], None, 'b'),
-            'bb': Bishop(B['bishop'], None, 'b'),
-            'bq': Queen(B['queen'], None, 'b'),
-            'bk': King(B['king'], None, 'b'),
-            'bp': Pawn(B['pawn'], None, 'b'),
+            'br': Rook(B['rook'], None, 'b', None),
+            'bn': Knight(B['knight'], None, 'b', None),
+            'bb': Bishop(B['bishop'], None, 'b', None),
+            'bq': Queen(B['queen'], None, 'b', None),
+            'bk': King(B['king'], None, 'b', [1,5]),
+            'bp': Pawn(B['pawn'], None, 'b', None),
 
-            'wr': Rook(W['rook'], None, 'w'),
-            'wn': Knight(W['knight'], None, 'w'),
-            'wb': Bishop(W['bishop'], None, 'w'),
-            'wq': Queen(W['queen'], None, 'w'),
-            'wk': King(W['king'], None, 'w'),
-            'wp': Pawn(W['pawn'], None, 'w'),
+            'wr': Rook(W['rook'], None, 'w', None),
+            'wn': Knight(W['knight'], None, 'w', None),
+            'wb': Bishop(W['bishop'], None, 'w', None),
+            'wq': Queen(W['queen'], None, 'w', None),
+            'wk': King(W['king'], None, 'w', [8,5]),
+            'wp': Pawn(W['pawn'], None, 'w', None),
 
             '  ': None
         }
@@ -66,7 +66,12 @@ class Pieces(pygame.sprite.Sprite):
     def selecting(self, p):
         x, y = p[0]-1, p[1]-1
         lst = self.available_moves(self.ar[x][y], p, self.ar[x][y][0])
-
+        if self.ar[x][y][-1] == 'k':
+            res = self.precond_castling(self.ar[x][y][0])
+            if res[0] == 1:
+                lst.append((x,y-2))
+            if res[1] == 1:
+                lst.append((x,y+2))
         if lst != []:
             for i in lst:
                 if self.ar[i[0]][i[1]] != '  ':
@@ -87,16 +92,74 @@ class Pieces(pygame.sprite.Sprite):
 
     def move(self, r, rr):
         a, b, c, d = r[0]-1, r[1]-1, rr[0]-1, rr[1]-1
+        if self.ar[a][b][-1] == 'k' or self.ar[a][b][-1] == 'r':
+            self.P[self.ar[a][b]].update_kpos([rr[0], rr[1]])
+
         if self.ar[c][d][0] == '.':
-            self.ar[c][d] = deepcopy(self.ar[a][b])
-            self.ar[a][b] = '  '
+            if self.ar[a][b][-1] == 'k' and (b-d==2 or d-b==2):
+                if b - d == 2:
+                    self.castle_move((a,b),(c,d-2))
+                elif d - b == 2:
+                    self.castle_move((a,b),(c,d+1))
+            else:
+                self.ar[c][d] = deepcopy(self.ar[a][b])
+                self.ar[a][b] = '  '
         else:
             return 0
         self.clean_selected()
         return 1
 
+    # def precond_castling(self, type):
+    #     res = [0,0]
+    #     if not self.is_checked(type) and not self.P[type+'k'].is_moved:
+    #         p = self.P[type+'k'].k_pos
+    #         x, y = p[0]-1, p[1]-1
+    #         if self.ar[x][y+1] == '  ' and self.ar[x][y+2] == '  ' and self.ar[x][y+3] == type+'r':
+    #             if self.is_pos_checked([x,y+1], type) and self.is_pos_checked([x,y+2], type):
+    #                 res[1] = 1
+    #         if self.ar[x][y-1] == '  ' and self.ar[x][y-2] == '  ' and self.ar[x][y-4] == type+'r':
+    #             if self.is_pos_checked([x,y-1], type) and self.is_pos_checked([x,y-2], type):
+    #                 res[0] = 1
+    #
+    #     return res
+    def precond_castling(self, type):
+        res = [0,0]
+        if not self.is_checked(type) and not self.P[type+'k'].is_moved:
+            p = self.P[type+'k'].k_pos
+            x, y = p[0]-1, p[1]-1
+            if self.ar[x][y+1] == '  ' and self.ar[x][y+2] == '  ' and self.ar[x][y+3] == type+'r':
+                    res[1] = 1
+            if self.ar[x][y-1] == '  ' and self.ar[x][y-2] == '  ' and self.ar[x][y-4] == type+'r':
+                    res[0] = 1
+
+        return res
+
+
+    def castle_move(self, k, r):
+        if r[1] > k[1]:
+            self.ar[k[0]][k[1]+2] = deepcopy(self.ar[k[0]][k[1]])
+            self.ar[k[0]][k[1]+1] = deepcopy(self.ar[r[0]][r[1]])
+            self.ar[k[0]][k[1]], self.ar[r[0]][r[1]] = '  ', '  '
+        else:
+            self.ar[k[0]][k[1]-2] = deepcopy(self.ar[k[0]][k[1]])
+            self.ar[k[0]][k[1]-1] = deepcopy(self.ar[r[0]][r[1]])
+            self.ar[k[0]][k[1]], self.ar[r[0]][r[1]] = '  ', '  '
+
     def is_checked(self, type):
-        p = self.P[type+'k'].king_position(self.ar, type)
+        p = self.P[type+'k'].k_pos
+        x, y = p[0]-1, p[1]-1
+        for i in range(8):
+            for j in range(8):
+                if self.ar[i][j] != '  ' and self.ar[i][j][0] != type:
+                    for pos in self.available_moves(self.ar[i][j], (i+1,j+1), self.ar[i][j][0]):
+                        if pos[0] == x and pos[1] == y:
+                            return True
+        return False
+
+    def is_checkmate(self, type):
+        pass
+
+    def is_pos_checked(self, p, type):
         x, y = p[0]-1, p[1]-1
         for i in range(8):
             for j in range(8):
@@ -124,13 +187,15 @@ class Pieces(pygame.sprite.Sprite):
 
 class King(pygame.sprite.Sprite):
 
-    def __init__(self, surf, rect, type):
+    def __init__(self, surf, rect, type, p):
         super(King, self).__init__()
         self.surf = surf
         self.surf.set_colorkey(BLACK, RLEACCEL)
         self.surf = pygame.transform.scale(self.surf, (PIECE_SIZE, PIECE_SIZE))
         self.rect = rect
         self.type = type
+        self.is_moved = False
+        self.k_pos = p
 
     def a_moves(self, ar, p, type):
         x, y, lst = p[0]-1, p[1]-1, []
@@ -142,19 +207,13 @@ class King(pygame.sprite.Sprite):
                     lst.append((nx, ny))
         return lst
 
-    def king_position(self, ar, type):
-        k = type + 'k'
-        px, py = None, None
-        for i in range(8):
-            for j in range(8):
-                if ar[i][j] == k:
-                    px = i+1
-                    py = j+1
-        return (px, py)
+    def update_kpos(self, p):
+        self.is_moved = True
+        self.k_pos = p
 
 class Queen(King):
-    def __init__(self, surf, rect, type):
-        super(Queen, self).__init__(surf, rect, type)
+    def __init__(self, surf, rect, type, p):
+        super(Queen, self).__init__(surf, rect, type, p)
 
     def a_moves(self, ar, p, type):
         x, y, lst = p[0]-1, p[1]-1, []
@@ -176,8 +235,8 @@ class Queen(King):
 
 
 class Bishop(King):
-    def __init__(self, surf, rect, type):
-        super(Bishop, self).__init__(surf, rect, type)
+    def __init__(self, surf, rect, type, p):
+        super(Bishop, self).__init__(surf, rect, type, p)
 
     def a_moves(self, ar, p, type):
         x, y, lst = p[0]-1, p[1]-1, []
@@ -198,8 +257,9 @@ class Bishop(King):
         return lst
 
 class Rook(King):
-    def __init__(self, surf, rect, type):
-        super(Rook, self).__init__(surf, rect, type)
+    def __init__(self, surf, rect, type, p):
+        super(Rook, self).__init__(surf, rect, type, p)
+        self.is_moved = False
 
     def a_moves(self, ar, p, type):
         x, y, lst = p[0]-1, p[1]-1, []
@@ -219,9 +279,12 @@ class Rook(King):
 
         return lst
 
+    def update_kpos(self, p):
+        self.is_moved = True
+
 class Knight(King):
-    def __init__(self, surf, rect, type):
-        super(Knight, self).__init__(surf, rect, type)
+    def __init__(self, surf, rect, type, p):
+        super(Knight, self).__init__(surf, rect, type, p)
 
     def a_moves(self, ar, p, type):
         x, y, lst = p[0]-1, p[1]-1, []
@@ -238,8 +301,8 @@ class Knight(King):
         return lst
 
 class Pawn(King):
-    def __init__(self, surf, rect, type):
-        super(Pawn, self).__init__(surf, rect, type)
+    def __init__(self, surf, rect, type, p):
+        super(Pawn, self).__init__(surf, rect, type, p)
 
     def a_moves(self, ar, p, type):
         x, y, lst = p[0]-1, p[1]-1, []
