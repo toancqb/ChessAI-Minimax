@@ -154,12 +154,38 @@ class Rook(King):
 
     def a_moves(self, ar, p, type):
         x, y, lst = p[0]-1, p[1]-1, []
-        index = [(-1,-1), (-1,0), (-1,1), (0,1), (1,1), (1,0), (1,-1), (0,-1)]
-        for i in index:
-            nx, ny = x+i[0], y+i[1]
-            if check_valid(nx, ny):
-                if ar[nx][ny] == '  ' or ar[x][y][0] != ar[nx][ny][0]:
-                    lst.append((nx, ny))
+        for py in range(1, 8):
+            if check_valid(x, y-py):
+                if ar[x][y-py] == '  ':
+                    lst.append((x, y-py))
+                if ar[x][y-py] != '  ':
+                    if type != ar[x][y-py][0]:
+                        lst.append((x, y-py))
+                    break
+        for py in range(1, 8):
+            if check_valid(x, y+py):
+                if ar[x][y+py] == '  ':
+                    lst.append((x, y+py))
+                if ar[x][y+py] != '  ':
+                    if type != ar[x][y+py][0]:
+                        lst.append((x, y+py))
+                    break
+        for px in range(1, 8):
+            if check_valid(x-px, y):
+                if ar[x-px][y] == '  ':
+                    lst.append((x-px, y))
+                if ar[x-px][y] != '  ':
+                    if type != ar[x-px][y][0]:
+                        lst.append((x-px, y))
+                    break
+        for px in range(1, 8):
+            if check_valid(x+px, y):
+                if ar[x+px][y] == '  ':
+                    lst.append((x+px, y))
+                if ar[x+px][y] != '  ':
+                    if type != ar[x+px][y][0]:
+                        lst.append((x+px, y))
+                    break
         return lst
 
 class Knight(King):
@@ -168,11 +194,15 @@ class Knight(King):
 
     def a_moves(self, ar, p, type):
         x, y, lst = p[0]-1, p[1]-1, []
-        index = [(-1,-1), (-1,0), (-1,1), (0,1), (1,1), (1,0), (1,-1), (0,-1)]
+        index = [(-1,-2), (-1,2), (1,-2), (1,2)]
         for i in index:
             nx, ny = x+i[0], y+i[1]
             if check_valid(nx, ny):
-                if ar[nx][ny] == '  ' or ar[x][y][0] != ar[nx][ny][0]:
+                if ar[nx][ny] == '  ' or type != ar[nx][ny][0]:
+                    lst.append((nx, ny))
+            nx, ny = x+i[1], y+i[0]
+            if check_valid(nx, ny):
+                if ar[nx][ny] == '  ' or type != ar[nx][ny][0]:
                     lst.append((nx, ny))
         return lst
 
@@ -182,10 +212,19 @@ class Pawn(King):
 
     def a_moves(self, ar, p, type):
         x, y, lst = p[0]-1, p[1]-1, []
-        index = [(-1,-1), (-1,0), (-1,1), (0,1), (1,1), (1,0), (1,-1), (0,-1)]
-        for i in index:
-            nx, ny = x+i[0], y+i[1]
-            if check_valid(nx, ny):
-                if ar[nx][ny] == '  ' or ar[x][y][0] != ar[nx][ny][0]:
-                    lst.append((nx, ny))
+        if type == 'b':
+            i_start, odd_type, sign = 1, 'w', 1
+        else:   #type = 'w'
+            i_start, odd_type, sign = 6, 'b', -1
+
+        if x == i_start:
+            if check_valid(x+sign*2, y) and ar[x+sign*2][y] == '  ':
+                lst.append((x+sign*2, y))
+        if check_valid(x+sign*1, y) and ar[x+sign*1][y] == '  ':
+            lst.append((x+sign*1, y))
+        if check_valid(x+sign*1, y-1) and ar[x+sign*1][y-1][0] == odd_type:
+            lst.append((x+sign*1, y-1))
+        if check_valid(x+sign*1, y+1) and ar[x+sign*1][y+1][0] == odd_type:
+            lst.append((x+sign*1, y+1))
+
         return lst

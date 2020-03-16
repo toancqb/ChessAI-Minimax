@@ -20,5 +20,7 @@ def check_valid(n, m):
     return False
 
 def print_ar(ar):
+    print("==================================")
     for i in ar:
         print(i)
+    print("==================================")
