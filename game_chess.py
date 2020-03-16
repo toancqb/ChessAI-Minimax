@@ -37,9 +37,10 @@ class Game():
         board = Board(self.screen)
         pieces = Pieces(self.screen)
 
-        player = 0 # 0 for white, 1 for black
-        cl = -1
-        st = []
+        # player 0 for white
+        #        1 for black
+        cplayer = ['w', 'b']
+        player, cl, st, cmate = 0, -1, [], -1
         running = True
         while running:
             pos_clicked = ()
@@ -69,9 +70,9 @@ class Game():
                 if not pieces.move(st[0], pos_clicked):
                     cl -= 1
                     continue
-                cl, st = -1, []
-                player = 1 - player
+                player, cl, st = 1 - player, -1, []
                 print_ar(pieces.ar)
+                print("Is Checked ? ", pieces.is_checked(cplayer[player]))
 
 
             board.draw_board()

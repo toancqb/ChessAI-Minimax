@@ -95,6 +95,17 @@ class Pieces(pygame.sprite.Sprite):
         self.clean_selected()
         return 1
 
+    def is_checked(self, type):
+        p = self.P[type+'k'].king_position(self.ar, type)
+        x, y = p[0]-1, p[1]-1
+        for i in range(8):
+            for j in range(8):
+                if self.ar[i][j] != '  ' and self.ar[i][j][0] != type:
+                    for pos in self.available_moves(self.ar[i][j], (i+1,j+1), self.ar[i][j][0]):
+                        if pos[0] == x and pos[1] == y:
+                            return True
+        return False
+
     def switch_piece(self, a, b):
         x, y = a[0]-1, a[1]-1
         kx, ky = b[0]-1, b[1]-1
@@ -130,6 +141,16 @@ class King(pygame.sprite.Sprite):
                 if ar[nx][ny] == '  ' or ar[x][y][0] != ar[nx][ny][0]:
                     lst.append((nx, ny))
         return lst
+
+    def king_position(self, ar, type):
+        k = type + 'k'
+        px, py = None, None
+        for i in range(8):
+            for j in range(8):
+                if ar[i][j] == k:
+                    px = i+1
+                    py = j+1
+        return (px, py)
 
 class Queen(King):
     def __init__(self, surf, rect, type):
