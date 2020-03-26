@@ -63,7 +63,7 @@ class Game():
             if pos_clicked != () and cl == 0:
                 pieces.selecting(pos_clicked)
                 st.append(pos_clicked)
-                print_ar(pieces.ar)
+                #print_ar(pieces.ar)
             if pos_clicked != () and cl == 1:
                 if eq(st[0], pos_clicked):
                     cl -= 1
@@ -76,10 +76,9 @@ class Game():
                     cl -= 1
                     continue
                 player, cl, st = 1 - player, -1, []
-                print_ar(pieces.ar)
-                print("Is Checked ? ", pieces.is_checked(cplayer[player]))
-                print("White King's Position:", pieces.P['wk'].k_pos)
-                print("Black King's Position:", pieces.P['bk'].k_pos)
+                #print_ar(pieces.ar)
+                #print("Is Checked ? ", pieces.is_checked(cplayer[player]))
+                pieces.prev_move.print_prev_move()
 
 
             board.draw_board()
