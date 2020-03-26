@@ -72,9 +72,10 @@ class Game():
                     cl -= 1
                     continue
                 player, cl, st = 1 - player, -1, []
-                print_ar(pieces.ar)
+                # print_ar(pieces.ar)
                 #print("Is Checked ? ", pieces.is_checked(cplayer[player]))
-                pieces.prev_move.print_prev_move()
+                # print("Is CheckMate ? ", pieces.is_checkmate(cplayer[player]))
+                #pieces.prev_move.print_prev_move()
 
 
             board.draw_board()

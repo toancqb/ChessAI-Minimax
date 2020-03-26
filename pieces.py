@@ -164,15 +164,15 @@ class Pieces(pygame.sprite.Sprite):
                         if self.is_prevent_check(deepcopy(self.ar),x,y,i[0],i[1],'..'):
                             self.ar[i[0]][i[1]] = '..'
         else:
-            lst = self.available_moves(self.ar[x][y], p, self.ar[x][y][0])
+            lst = self.available_moves(self.ar[x][y], p, type)
             if self.ar[x][y][-1] == 'k':
-                res = self.precond_castling(self.ar[x][y][0])
+                res = self.precond_castling(type)
                 if res[0] == 1:
                     lst.append((x,y-2))
                     if res[1] == 1:
                         lst.append((x,y+2))
             if self.ar[x][y][-1] == 'p':
-                tmp = self.prev_move.precond_en_passant(self.ar, x, y, self.ar[x][y][0])
+                tmp = self.prev_move.precond_en_passant(self.ar, x, y, type)
                 if tmp != []:
                     for i in tmp:
                         self.ar[i[0]][i[1]] = '...'
@@ -249,7 +249,29 @@ class Pieces(pygame.sprite.Sprite):
         return False
 
     def is_checkmate(self, type):
-        pass
+        count = 0
+        if self.is_checked(type):
+            for x in range(8):
+                for y in range(8):
+                    if self.ar[x][y][0] == type:
+                        lst = self.available_moves(self.ar[x][y], (x+1,y+1), type)
+                        if self.ar[x][y][-1] == 'p':
+                            tmp = self.prev_move.precond_en_passant(self.ar, x, y, type)
+                            if tmp != []:
+                                for i in tmp:
+                                    if self.is_prevent_check(deepcopy(self.ar),x,y,i[0],i[1],'...'):
+                                        count += 1
+                        if lst != []:
+                            for i in lst:
+                                if self.ar[i[0]][i[1]] != '  ':
+                                    if self.is_prevent_check(deepcopy(self.ar),x,y,i[0],i[1],'.' + deepcopy(self.ar[i[0]][i[1]])):
+                                        count += 1
+                                else:
+                                    if self.is_prevent_check(deepcopy(self.ar),x,y,i[0],i[1],'..'):
+                                        count += 1
+            if count == 0:
+                return True
+        return False
 
     def is_pos_not_checked(self, p, type):
         x, y = p[0]-1, p[1]-1
