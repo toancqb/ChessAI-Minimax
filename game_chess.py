@@ -17,10 +17,6 @@ class Board():
         pygame.draw.rect(self.screen, BLUE, (0, 0, PIECE_SIZE, SCREEN_SIZE))
         pygame.draw.rect(self.screen, BLUE, (SCREEN_SIZE-PIECE_SIZE, 0, PIECE_SIZE, SCREEN_SIZE))
         pygame.draw.rect(self.screen, BLUE, (0, SCREEN_SIZE-PIECE_SIZE, SCREEN_SIZE-PIECE_SIZE, PIECE_SIZE))
-        # pygame.draw.line(self.screen, GREEN, (PZ-WL, PZ-WL), (PZ-WL, SZ+WL), 2*WL)
-        # pygame.draw.line(self.screen, GREEN, (PZ-WL, PZ-WL), (SZ+WL, PZ-WL), 2*WL)
-        # pygame.draw.line(self.screen, GREEN, (SZ+WL, PZ-WL), (SZ+WL, SZ+WL), 2*WL)
-        # pygame.draw.line(self.screen, GREEN, (PZ-WL, SZ+WL), (SZ+WL, SZ+WL), 2*WL)
         for y in range(8):
             for x in range(8):
                 if (x + y) % 2 == 0:
@@ -63,20 +59,20 @@ class Game():
             if pos_clicked != () and cl == 0:
                 pieces.selecting(pos_clicked)
                 st.append(pos_clicked)
-                #print_ar(pieces.ar)
+                print_ar(pieces.ar)
             if pos_clicked != () and cl == 1:
                 if eq(st[0], pos_clicked):
                     cl -= 1
                     continue
                 if pieces.switch_piece(st[0], pos_clicked):
                     cl, st = -1, []
-                    pieces.clean_selected()
+                    clean_selected(pieces.ar)
                     continue
                 if not pieces.move(st[0], pos_clicked):
                     cl -= 1
                     continue
                 player, cl, st = 1 - player, -1, []
-                #print_ar(pieces.ar)
+                print_ar(pieces.ar)
                 #print("Is Checked ? ", pieces.is_checked(cplayer[player]))
                 pieces.prev_move.print_prev_move()
 

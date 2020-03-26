@@ -24,3 +24,11 @@ def print_ar(ar):
     for i in ar:
         print(i)
     print("================================================")
+
+def clean_selected(ar):
+    for i in range(8):
+        for j in range(8):
+            if ar[i][j] == '..' or ar[i][j] == '...':
+                ar[i][j] = '  '
+            if ar[i][j][:2] == '.w' or ar[i][j][:2] == '.b':
+                ar[i][j] = ar[i][j][1:]

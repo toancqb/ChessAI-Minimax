@@ -30,15 +30,35 @@ class PrevMove():
 
         return lst
 
+    def move(self, ar, a, b, c, d):
+        if ar[c][d][0] == '.':
+            if ar[c][d] == '...':
+                if ar[a][b][0] == 'b':
+                    ar[c-1][d] = '  '
+                if ar[a][b][0] == 'w':
+                    ar[c+1][d] = '  '
+            ar[c][d] = deepcopy(ar[a][b])
+            ar[a][b] = '  '
+        else:
+            return 0
+        clean_selected(ar)
+        return 1
+
+    def is_checked(self, ar, P, type):
+        p = P[type+'k'].k_pos
+        x, y = p[0]-1, p[1]-1
+        for i in range(8):
+            for j in range(8):
+                if ar[i][j] != '  ' and ar[i][j][0] != type:
+                    for pos in P[ar[i][j]].a_moves(ar, (i+1,j+1), ar[i][j][0]):
+                        if pos[0] == x and pos[1] == y:
+                            return True
+        return False
+
     def is_prev_move(self, piece1, p2, piece2, b1, b2):
         len = self.len - 1
         if self.m != []:
             while len >= 0:
-                # if self.m[len][0] == piece1 and self.m[len][2][0] == p2[0] and self.m[len][2][1] == p2[1]:
-                #     break
-                # if self.m[len][0] == piece2 and self.m[len][2][0] == b2[0] and self.m[len][2][1] == b2[1]\
-                #     self.m[len][1][0] == b1[0] and self.m[len][1][1] == b1[1]:
-                #     return True
                 if self.m[len][0] == piece1 and self.m[len][2] == p2:
                     break
                 if self.m[len][0] == piece2 and self.m[len][2] == b2 and self.m[len][1] == b1:
@@ -118,37 +138,53 @@ class Pieces(pygame.sprite.Sprite):
                         self.P[self.ar[i][j]].rect = cal_rect(1, i+1,j+1)
                         self.screen.blit(self.P[self.ar[i][j]].surf, cal_rect(1, i+1,j+1))
 
+    def is_prevent_check(self, ar, a, b, c, d, m):
+        type = ar[a][b][0]
+        ar[c][d] = m
+        self.prev_move.move(ar,a,b,c,d)
+        return not self.prev_move.is_checked(ar, self.P, type)
+
     def selecting(self, p):
         x, y = p[0]-1, p[1]-1
-        lst = self.available_moves(self.ar[x][y], p, self.ar[x][y][0])
-        if self.ar[x][y][-1] == 'k':
-            res = self.precond_castling(self.ar[x][y][0])
-            if res[0] == 1:
-                lst.append((x,y-2))
-            if res[1] == 1:
-                lst.append((x,y+2))
-        if self.ar[x][y][-1] == 'p':
-            tmp = self.prev_move.precond_en_passant(self.ar, x, y, self.ar[x][y][0])
-            if tmp != []:
-                for i in tmp:
-                    self.ar[i[0]][i[1]] = '...'
-        if lst != []:
-            for i in lst:
-                if self.ar[i[0]][i[1]] != '  ':
-                    self.ar[i[0]][i[1]] = '.' + self.ar[i[0]][i[1]]
-                else:
-                    self.ar[i[0]][i[1]] = '..'
+        type = self.ar[x][y][0]
+        if self.is_checked(type):
+            lst = self.available_moves(self.ar[x][y], p, type)
+            if self.ar[x][y][-1] == 'p':
+                tmp = self.prev_move.precond_en_passant(self.ar, x, y, self.ar[x][y][0])
+                if tmp != []:
+                    for i in tmp:
+                        if self.is_prevent_check(deepcopy(self.ar),x,y,i[0],i[1],'...'):
+                            self.ar[i[0]][i[1]] = '...'
+            if lst != []:
+                for i in lst:
+                    if self.ar[i[0]][i[1]] != '  ':
+                        if self.is_prevent_check(deepcopy(self.ar),x,y,i[0],i[1],'.' + deepcopy(self.ar[i[0]][i[1]])):
+                            self.ar[i[0]][i[1]] = '.' + self.ar[i[0]][i[1]]
+                    else:
+                        if self.is_prevent_check(deepcopy(self.ar),x,y,i[0],i[1],'..'):
+                            self.ar[i[0]][i[1]] = '..'
+        else:
+            lst = self.available_moves(self.ar[x][y], p, self.ar[x][y][0])
+            if self.ar[x][y][-1] == 'k':
+                res = self.precond_castling(self.ar[x][y][0])
+                if res[0] == 1:
+                    lst.append((x,y-2))
+                    if res[1] == 1:
+                        lst.append((x,y+2))
+            if self.ar[x][y][-1] == 'p':
+                tmp = self.prev_move.precond_en_passant(self.ar, x, y, self.ar[x][y][0])
+                if tmp != []:
+                    for i in tmp:
+                        self.ar[i[0]][i[1]] = '...'
+            if lst != []:
+                for i in lst:
+                    if self.ar[i[0]][i[1]] != '  ':
+                        self.ar[i[0]][i[1]] = '.' + self.ar[i[0]][i[1]]
+                    else:
+                        self.ar[i[0]][i[1]] = '..'
 
     def available_moves(self, pc, p, type):
         return self.P[pc].a_moves(self.ar, p, type)
-
-    def clean_selected(self):
-        for i in range(8):
-            for j in range(8):
-                if self.ar[i][j] == '..' or self.ar[i][j] == '...':
-                    self.ar[i][j] = '  '
-                if self.ar[i][j][:2] == '.w' or self.ar[i][j][:2] == '.b':
-                    self.ar[i][j] = self.ar[i][j][1:]
 
     def move(self, r, rr):
         a, b, c, d = r[0]-1, r[1]-1, rr[0]-1, rr[1]-1
@@ -174,7 +210,7 @@ class Pieces(pygame.sprite.Sprite):
                 self.ar[a][b] = '  '
         else:
             return 0
-        self.clean_selected()
+        clean_selected(self.ar)
         return 1
 
     def precond_castling(self, type):
@@ -190,19 +226,6 @@ class Pieces(pygame.sprite.Sprite):
                     res[0] = 1
 
         return res
-
-    # def precond_castling(self, type):
-    #     res = [0,0]
-    #     if not self.is_checked(type) and not self.P[type+'k'].is_moved:
-    #         p = self.P[type+'k'].k_pos
-    #         x, y = p[0]-1, p[1]-1
-    #         if self.ar[x][y+1] == '  ' and self.ar[x][y+2] == '  ' and self.ar[x][y+3] == type+'r':
-    #                 res[1] = 1
-    #         if self.ar[x][y-1] == '  ' and self.ar[x][y-2] == '  ' and self.ar[x][y-4] == type+'r':
-    #                 res[0] = 1
-    #
-    #     return res
-
 
     def castle_move(self, k, r):
         if r[1] > k[1]:
@@ -253,6 +276,3 @@ class Pieces(pygame.sprite.Sprite):
         if self.ar[p[0]-1][p[1]-1] != '  ' and self.ar[p[0]-1][p[1]-1][0] == player:
             return True
         return False
-
-    def precond_en_passant(self, a, b, type):
-        pass
