@@ -143,3 +143,50 @@ def a_moves(self, ar, p, type):
                 break
         else:
             break
+
+# player 0 for white
+#        1 for black
+# cplayer = ['w', 'b']
+# player, cl, st, cmate = 0, -1, [], -1
+# running = True
+# while running:
+#     pos_clicked = ()
+#     for event in pygame.event.get():
+#         if event.type == QUIT:
+#             running = False
+#         if event.type == MOUSEBUTTONDOWN:
+#             if pygame.mouse.get_pressed()[0]:
+#                 pos_clicked = rev_rect(pygame.mouse.get_pos())
+#                 cl += 1
+#                 if not pieces.precond(pos_clicked, player) and cl == 0:
+#                     cl -= 1
+#                     continue
+#
+#     if pos_clicked != () and cl == 0:
+#         pieces.selecting(pos_clicked)
+#         st.append(pos_clicked)
+#         print_ar(pieces.ar)
+#     if pos_clicked != () and cl == 1:
+#         if eq(st[0], pos_clicked):
+#             cl -= 1
+#             continue
+#         if pieces.switch_piece(st[0], pos_clicked):
+#             cl, st = -1, []
+#             clean_selected(pieces.ar)
+#             continue
+#         if not pieces.move(st[0], pos_clicked):
+#             cl -= 1
+#             continue
+#         player, cl, st = 1 - player, -1, []
+#         print_ar(pieces.ar)
+#         print("Is Checked ? ", pieces.is_checked(cplayer[player]))
+#         print("Is CheckMate ? ", pieces.is_checkmate(cplayer[player]))
+#         pieces.prev_move.print_prev_move()
+#
+#
+#     board.draw_board()
+#     pieces.draw_pieces()
+#
+#     pygame.display.flip()
+#     self.clock.tick(30)
+#

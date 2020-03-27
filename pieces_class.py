@@ -1,4 +1,5 @@
 import pygame
+import random
 from define import *
 from tools import *
 
@@ -153,3 +154,21 @@ class Pawn(King):
             self.is_jumped = True
         else:
             self.is_jumped = False
+
+class Cloud(pygame.sprite.Sprite):
+    def __init__(self):
+        super(Cloud, self).__init__()
+        self.surf = pygame.image.load(os.path.join("img","cloud.png")).convert()
+        self.surf.set_colorkey((0, 0, 0), RLEACCEL)
+        self.rect = self.surf.get_rect(
+            center = (
+                random.randint(SCREEN_SIZE+20, SCREEN_SIZE+100),
+                random.randint(0, SCREEN_SIZE),
+            )
+        )
+        self.speed = 4
+
+    def update(self):
+        self.rect.move_ip(-self.speed, 0)
+        if self.rect.right < 0:
+            self.kill()

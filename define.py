@@ -4,6 +4,9 @@ import os.path
 
 from pygame.locals import (
     MOUSEBUTTONDOWN,
+    KEYDOWN,
+    K_ESCAPE,
+    K_SPACE,
     RLEACCEL,
     QUIT,
 )
