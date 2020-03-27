@@ -298,3 +298,51 @@ class Pieces(pygame.sprite.Sprite):
         if self.ar[p[0]-1][p[1]-1] != '  ' and self.ar[p[0]-1][p[1]-1][0] == player:
             return True
         return False
+
+
+    def selecting_AI(self, p):
+        x, y = p[0]-1, p[1]-1
+        type = self.ar[x][y][0]
+        lst_ai = []
+        if self.is_checked(type):
+            lst = self.available_moves(self.ar[x][y], p, type)
+            if self.ar[x][y][-1] == 'p':
+                tmp = self.prev_move.precond_en_passant(self.ar, x, y, self.ar[x][y][0])
+                if tmp != []:
+                    for i in tmp:
+                        if self.is_prevent_check(deepcopy(self.ar),x,y,i[0],i[1],'...'):
+                            self.ar[i[0]][i[1]] = '...'
+                            lst_ai.append((i[0]+1,i[1]+1))
+            if lst != []:
+                for i in lst:
+                    if self.ar[i[0]][i[1]] != '  ':
+                        if self.is_prevent_check(deepcopy(self.ar),x,y,i[0],i[1],'.' + deepcopy(self.ar[i[0]][i[1]])):
+                            self.ar[i[0]][i[1]] = '.' + self.ar[i[0]][i[1]]
+                            lst_ai.append((i[0]+1,i[1]+1))
+                    else:
+                        if self.is_prevent_check(deepcopy(self.ar),x,y,i[0],i[1],'..'):
+                            self.ar[i[0]][i[1]] = '..'
+                            lst_ai.append((i[0]+1,i[1]+1))
+        else:
+            lst = self.available_moves(self.ar[x][y], p, type)
+            if self.ar[x][y][-1] == 'k':
+                res = self.precond_castling(type)
+                if res[0] == 1:
+                    lst.append((x+1,y-1))
+                    if res[1] == 1:
+                        lst.append((x+1,y+3))
+            if self.ar[x][y][-1] == 'p':
+                tmp = self.prev_move.precond_en_passant(self.ar, x, y, type)
+                if tmp != []:
+                    for i in tmp:
+                        self.ar[i[0]][i[1]] = '...'
+                        lst_ai.append((i[0]+1,i[1]+1))
+            if lst != []:
+                for i in lst:
+                    if self.ar[i[0]][i[1]] != '  ':
+                        self.ar[i[0]][i[1]] = '.' + self.ar[i[0]][i[1]]
+                        lst_ai.append((i[0]+1,i[1]+1))
+                    else:
+                        self.ar[i[0]][i[1]] = '..'
+                        lst_ai.append((i[0]+1,i[1]+1))
+        return lst_ai

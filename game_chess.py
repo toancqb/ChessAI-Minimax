@@ -6,6 +6,7 @@ from copy import deepcopy
 from define import *
 from pieces import *
 from tools import *
+from AI import *
 
 
 class Board():
@@ -41,7 +42,8 @@ class Game():
         pieces = Pieces(self.screen)
 
         self.Menu()
-        self.Game_player_vs_player(board, pieces)
+        cmate = self.Game_player_vs_AI(board, pieces)
+        self.Game_Over(board, pieces, cmate)
 
         pygame.quit()
 
@@ -66,11 +68,15 @@ class Game():
         clouds_decor = pygame.sprite.Group()
         clouds_decor.add(Cloud())
         clouds_decor.add(Cloud())
+        option = -1
         running = True
         while running:
             for event in pygame.event.get():
                 if event.type == KEYDOWN:
-                    if event.key == K_ESCAPE or event.key == K_SPACE:
+                    if event.key == K_ESCAPE:
+                        running = False
+                    if event.key == K_SPACE:
+                        option = 1
                         running = False
                 elif event.type == QUIT:
                     running = False
@@ -90,6 +96,7 @@ class Game():
             pygame.display.flip()
             self.clock.tick(30)
 
+        return option
 
 
     def Game_player_vs_player(self, board, pieces):
@@ -130,18 +137,105 @@ class Game():
                 player, cl, st = 1 - player, -1, []
                 count = 1 - count
                 print_ar(pieces.ar)
-                #print("Is Checked ? ", pieces.is_checked(cplayer[player]))
-                # print("Is CheckMate ? ", pieces.is_checkmate(cplayer[player]))
-                #pieces.prev_move.print_prev_move()
-
+                print("Is Checked ? ", pieces.is_checked(cplayer[player]))
+                print("Is CheckMate ? ", pieces.is_checkmate(cplayer[player]))
+                if pieces.is_checked(cplayer[player]):
+                    if pieces.is_checkmate(cplayer[player]):
+                        cmate = 1-player
+                        running = False
 
             board.draw_board(C[count])
             pieces.draw_pieces()
 
             pygame.display.flip()
             self.clock.tick(30)
+        return cmate
 
-        pygame.quit()
+    def Game_player_vs_AI(self, board, pieces):
+        cplayer = ['w', 'b']
+        C = [BLUE, BLACK]
+        player, cl, st, cmate, count = 0, -1, [], -1, 0
+        AI = AI_stupid(pieces.ar, pieces)
+        running = True
+        while running:
+            pos_clicked = ()
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    running = False
+                if event.type == MOUSEBUTTONDOWN:
+                    if player == 0 and pygame.mouse.get_pressed()[0]:
+                        pos_clicked = rev_rect(pygame.mouse.get_pos())
+                        cl += 1
+                        if not pieces.precond(pos_clicked, player) and cl == 0:
+                            cl -= 1
+                            continue
+            if player == 0:
+                if pos_clicked != () and cl == 0:
+                    pieces.selecting(pos_clicked)
+                    st.append(pos_clicked)
+                    print_ar(pieces.ar)
+                if pos_clicked != () and cl == 1:
+                    if eq(st[0], pos_clicked):
+                        cl -= 1
+                        continue
+                    if pieces.switch_piece(st[0], pos_clicked):
+                        cl, st = -1, []
+                        clean_selected(pieces.ar)
+                        continue
+                    if not pieces.move(st[0], pos_clicked):
+                        cl -= 1
+                        continue
+                    player, cl, st = 1 - player, -1, []
+                    count = 1 - count
+                    print_ar(pieces.ar)
+                    if pieces.is_checked(cplayer[player]):
+                        if pieces.is_checkmate(cplayer[player]):
+                            cmate = 1-player
+                            running = False
+            else: # player(AI) = 1
+                pos = AI.find_pos(pieces.ar, pieces, 'b')
+                # if pos == ():
+                #     print("????????\n")
+                pieces.move(pos[0], pos[1])
+                count = 1 - count
+                print_ar(pieces.ar)
+                player = 1 - player
+                if pieces.is_checked(cplayer[player]):
+                    if pieces.is_checkmate(cplayer[player]):
+                        cmate = 1-player
+                        running = False
+                #print("Is Checked ? ", pieces.is_checked(cplayer[player]))
+                #print("Is CheckMate ? ", pieces.is_checkmate(cplayer[player]))
+                #pieces.prev_move.print_prev_move()
+
+            board.draw_board(C[count])
+            pieces.draw_pieces()
+
+            pygame.display.flip()
+            self.clock.tick(30)
+        return cmate
+
+    def Game_Over(self, board, pieces, cmate):
+        txt = "-= PLAYER "+str(cmate+1)+" WON! =-"
+        txt = self.font.render(txt, True, GREEN)
+        txt_center = (
+            SCREEN_SIZE/2 - txt.get_width() // 2,
+            50/2 - txt.get_height() // 2
+        )
+        running = True
+        while running:
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    running = False
+
+            board.draw_board(BLUE)
+            pieces.draw_pieces()
+            self.screen.blit(txt, txt_center)
+
+            pygame.display.flip()
+            self.clock.tick(30)
+
+
 
 if __name__ == '__main__':
     t = Game()
