@@ -197,7 +197,7 @@ class Game():
                             cmate = 1-player
                             running = False
             else: # player(AI) = 1
-                pos = AI.find_pos(pieces.ar, pieces, 'b')
+                pos = AI.find_pos_optimal(pieces.ar, pieces, 'b')
                 pieces.move(pos[0], pos[1])
                 print_ar(pieces.ar)
                 player = 1 - player
