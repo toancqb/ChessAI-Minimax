@@ -94,19 +94,13 @@ class Game():
                 if event.type == MOUSEBUTTONDOWN:
                     if pygame.mouse.get_pressed()[0]:
                         pos_clicked = pygame.mouse.get_pos()
-                        # if pos_clicked[0] >= SCREEN_SIZE/2 - txt2.get_width() // 2 and \
-                        # pos_clicked[0] <= SCREEN_SIZE/2 + txt2.get_width() // 2 and \
-                        # pos_clicked[1] >= SCREEN_SIZE/2 + 30 - txt2.get_height() // 2 and \
-                        # pos_clicked[1] <= SCREEN_SIZE/2 + 30 + txt2.get_height() // 2:
-                        if check_position(pos_clicked,SCREEN_SIZE/2-txt2.get_width(),SCREEN_SIZE/2+txt2.get_width(),\
+                        if check_position(pos_clicked,\
+                        SCREEN_SIZE/2-txt2.get_width(),SCREEN_SIZE/2+txt2.get_width(),\
                         SCREEN_SIZE/2+30-txt2.get_height(),SCREEN_SIZE/2+30+txt2.get_height()):
                             option = 1
                             running = False
-                        # elif pos_clicked[0] >= SCREEN_SIZE/2 - txt3.get_width() // 2 and \
-                        # pos_clicked[0] <= SCREEN_SIZE/2 + txt3.get_width() // 2 and \
-                        # pos_clicked[1] >= SCREEN_SIZE/2 + 60 - txt3.get_height() // 2 and \
-                        # pos_clicked[1] <= SCREEN_SIZE/2 + 60 + txt3.get_height() // 2:
-                        elif check_position(pos_clicked,SCREEN_SIZE/2-txt3.get_width(),SCREEN_SIZE/2+txt3.get_width(),\
+                        elif check_position(pos_clicked,\
+                        SCREEN_SIZE/2-txt3.get_width(),SCREEN_SIZE/2+txt3.get_width(),\
                         SCREEN_SIZE/2+60-txt3.get_height(),SCREEN_SIZE/2+60+txt3.get_height()):
                             option = 2
                             running = False

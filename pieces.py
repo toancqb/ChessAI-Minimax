@@ -179,9 +179,11 @@ class Pieces(pygame.sprite.Sprite):
             if lst != []:
                 for i in lst:
                     if self.ar[i[0]][i[1]] != '  ':
-                        self.ar[i[0]][i[1]] = '.' + self.ar[i[0]][i[1]]
+                        if self.is_prevent_check(deepcopy(self.ar),x,y,i[0],i[1],'.' + deepcopy(self.ar[i[0]][i[1]])):
+                            self.ar[i[0]][i[1]] = '.' + self.ar[i[0]][i[1]]
                     else:
-                        self.ar[i[0]][i[1]] = '..'
+                        if self.is_prevent_check(deepcopy(self.ar),x,y,i[0],i[1],'..'):
+                            self.ar[i[0]][i[1]] = '..'
 
     def available_moves(self, pc, p, type):
         return self.P[pc].a_moves(self.ar, p, type)
