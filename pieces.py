@@ -349,9 +349,11 @@ class Pieces(pygame.sprite.Sprite):
             if lst != []:
                 for i in lst:
                     if self.ar[i[0]][i[1]] != '  ':
-                        self.ar[i[0]][i[1]] = '.' + self.ar[i[0]][i[1]]
-                        lst_ai.append((i[0]+1,i[1]+1))
+                        if self.is_prevent_check(deepcopy(self.ar),x,y,i[0],i[1],'.' + deepcopy(self.ar[i[0]][i[1]])):
+                            self.ar[i[0]][i[1]] = '.' + self.ar[i[0]][i[1]]
+                            lst_ai.append((i[0]+1,i[1]+1))
                     else:
-                        self.ar[i[0]][i[1]] = '..'
-                        lst_ai.append((i[0]+1,i[1]+1))
+                        if self.is_prevent_check(deepcopy(self.ar),x,y,i[0],i[1],'..'):
+                            self.ar[i[0]][i[1]] = '..'
+                            lst_ai.append((i[0]+1,i[1]+1))
         return lst_ai
