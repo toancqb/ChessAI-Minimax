@@ -40,7 +40,7 @@ class Game():
         self.font2 = pygame.font.SysFont("comicsansms", 72)
         board = Board(self.screen)
         pieces = Pieces(self.screen)
-
+        cmate = -1
         option = self.Menu()
         if option == 1:
             cmate = self.Game_player_vs_player(board, pieces)
@@ -59,11 +59,18 @@ class Game():
             SCREEN_SIZE/2 - txt.get_height() // 2
         )
 
-        txt2 = self.font.render("Press <Space> to Play", True, GREEN)
+        txt2 = self.font.render("Player 1 vs Player 2", True, GREEN)
         txt2_center = (
             SCREEN_SIZE/2 - txt2.get_width() // 2,
             SCREEN_SIZE/2 + 30
         )
+        txt2rect = txt2.get_rect()
+        txt3 = self.font.render("Player 1 vs AI Computer", True, GREEN)
+        txt3_center = (
+            SCREEN_SIZE/2 - txt3.get_width() // 2,
+            SCREEN_SIZE/2 + 60
+        )
+        txt3rect = txt3.get_rect()
 
         ADDCLOUD = pygame.USEREVENT + 3
         pygame.time.set_timer(ADDCLOUD, 2000)
@@ -84,9 +91,29 @@ class Game():
                     if event.key == K_UP:
                         option = 2
                         running = False
-                elif event.type == QUIT:
+                if event.type == MOUSEBUTTONDOWN:
+                    if pygame.mouse.get_pressed()[0]:
+                        pos_clicked = pygame.mouse.get_pos()
+                        # if pos_clicked[0] >= SCREEN_SIZE/2 - txt2.get_width() // 2 and \
+                        # pos_clicked[0] <= SCREEN_SIZE/2 + txt2.get_width() // 2 and \
+                        # pos_clicked[1] >= SCREEN_SIZE/2 + 30 - txt2.get_height() // 2 and \
+                        # pos_clicked[1] <= SCREEN_SIZE/2 + 30 + txt2.get_height() // 2:
+                        if check_position(pos_clicked,SCREEN_SIZE/2-txt2.get_width(),SCREEN_SIZE/2+txt2.get_width(),\
+                        SCREEN_SIZE/2+30-txt2.get_height(),SCREEN_SIZE/2+30+txt2.get_height()):
+                            option = 1
+                            running = False
+                        # elif pos_clicked[0] >= SCREEN_SIZE/2 - txt3.get_width() // 2 and \
+                        # pos_clicked[0] <= SCREEN_SIZE/2 + txt3.get_width() // 2 and \
+                        # pos_clicked[1] >= SCREEN_SIZE/2 + 60 - txt3.get_height() // 2 and \
+                        # pos_clicked[1] <= SCREEN_SIZE/2 + 60 + txt3.get_height() // 2:
+                        elif check_position(pos_clicked,SCREEN_SIZE/2-txt3.get_width(),SCREEN_SIZE/2+txt3.get_width(),\
+                        SCREEN_SIZE/2+60-txt3.get_height(),SCREEN_SIZE/2+60+txt3.get_height()):
+                            option = 2
+                            running = False
+
+                if event.type == QUIT:
                     running = False
-                elif event.type == ADDCLOUD:
+                if event.type == ADDCLOUD:
                     new_cloud = Cloud()
                     clouds_decor.add(new_cloud)
 
@@ -95,6 +122,7 @@ class Game():
 
             self.screen.blit(txt, txt_center)
             self.screen.blit(txt2, txt2_center)
+            self.screen.blit(txt3, txt3_center)
 
             for entity in clouds_decor:
                 self.screen.blit(entity.surf, entity.rect)
@@ -197,7 +225,7 @@ class Game():
                             cmate = 1-player
                             running = False
             else: # player(AI) = 1
-                pos = AI.find_pos_optimal(pieces.ar, pieces, 'b')
+                pos = AI.find_pos_random(pieces.ar, pieces, 'b')
                 pieces.move(pos[0], pos[1])
                 print_ar(pieces.ar)
                 player = 1 - player

@@ -19,12 +19,17 @@ class AI():
                     lst_pieces.append((ar[i][j], i, j))
         return lst_pieces
 
+class AI_simple(AI):
+    def __init__(self, ar, pieces):
+        self.ar = ar
+        self.pieces = pieces
+
 class AI_stupid(AI):
     def __init__(self, ar, pieces):
         self.ar = ar
-        self.pieces = pieces    
+        self.pieces = pieces
 
-    def find_pos_optimal(self, ar, pieces, type):
+    def find_pos_random(self, ar, pieces, type):
         lst_pieces = self.lst_pieces_available(ar, pieces, type)
         if lst_pieces != []:
             random.shuffle(lst_pieces)

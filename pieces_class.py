@@ -4,10 +4,9 @@ from define import *
 from tools import *
 
 
-class King(pygame.sprite.Sprite):
+class King():
 
     def __init__(self, surf, rect, type, p):
-        super(King, self).__init__()
         self.surf = surf
         self.surf.set_colorkey(BLACK, RLEACCEL)
         self.surf = pygame.transform.scale(self.surf, (PIECE_SIZE, PIECE_SIZE))
