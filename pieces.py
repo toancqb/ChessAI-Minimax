@@ -169,8 +169,8 @@ class Pieces(pygame.sprite.Sprite):
                 res = self.precond_castling(type)
                 if res[0] == 1:
                     lst.append((x,y-2))
-                    if res[1] == 1:
-                        lst.append((x,y+2))
+                if res[1] == 1:
+                    lst.append((x,y+2))
             if self.ar[x][y][-1] == 'p':
                 tmp = self.prev_move.precond_en_passant(self.ar, x, y, type)
                 if tmp != []:
@@ -188,6 +188,7 @@ class Pieces(pygame.sprite.Sprite):
 
     def move(self, r, rr):
         a, b, c, d = r[0]-1, r[1]-1, rr[0]-1, rr[1]-1
+        type = self.ar[a][b][0]
         if self.ar[a][b][-1] == 'k' or self.ar[a][b][-1] == 'r':
             self.P[self.ar[a][b]].update_kpos([rr[0], rr[1]])
 
@@ -202,12 +203,18 @@ class Pieces(pygame.sprite.Sprite):
             else:
                 self.prev_move.update(self.ar[a][b], (a,b), (c,d))
                 if self.ar[c][d] == '...':
-                    if self.ar[a][b][0] == 'b':
+                    if type == 'b':
                         self.ar[c-1][d] = '  '
-                    if self.ar[a][b][0] == 'w':
+                    if type == 'w':
                         self.ar[c+1][d] = '  '
                 self.ar[c][d] = deepcopy(self.ar[a][b])
                 self.ar[a][b] = '  '
+                if self.ar[c][d][-1] == 'p':
+                    if type == 'b' and c == 7:
+                        self.ar[c][d] = deepcopy('bq')
+                    elif type == 'w' and c == 0:
+                        self.ar[c][d] = deepcopy('wq')
+
         else:
             return 0
         clean_selected(self.ar)
@@ -329,8 +336,8 @@ class Pieces(pygame.sprite.Sprite):
                 res = self.precond_castling(type)
                 if res[0] == 1:
                     lst.append((x+1,y-1))
-                    if res[1] == 1:
-                        lst.append((x+1,y+3))
+                if res[1] == 1:
+                    lst.append((x+1,y+3))
             if self.ar[x][y][-1] == 'p':
                 tmp = self.prev_move.precond_en_passant(self.ar, x, y, type)
                 if tmp != []:
