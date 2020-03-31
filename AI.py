@@ -63,10 +63,10 @@ class AI():
         if not self.is_checked_AI_Move(ar,type) and not self.pieces.P[type+'k'].is_moved:#<---
             p = king_position(ar, type)
             x, y = p[0], p[1]
-            if ar[x][y+1] == '  ' and ar[x][y+2] == '  ' and ar[x][y+3] == type+'r':
+            if check_valid(y+1,y+3) and ar[x][y+1] == '  ' and ar[x][y+2] == '  ' and ar[x][y+3] == type+'r':
                 if self.is_pos_not_checked_AI_Move(ar, [x,y+1], type) and self.is_pos_not_checked_AI_Move(ar, [x,y+2], type):
                     res[1] = 1
-            if ar[x][y-1] == '  ' and ar[x][y-2] == '  ' and ar[x][y-4] == type+'r':
+            if check_valid(y-1,y-3) and ar[x][y-1] == '  ' and ar[x][y-2] == '  ' and ar[x][y-4] == type+'r':
                 if self.is_pos_not_checked_AI_Move(ar, [x,y-1], type) and self.is_pos_not_checked_AI_Move(ar, [x,y-2], type):
                     res[0] = 1
 
@@ -154,9 +154,9 @@ class AI_Minimax(AI):
 
     def minimax(self,ar,pieces,type,alpha,beta,depth, last_move,prev_move):
         if depth == 0:
-            return (self.eval_board(ar),last_move[0],last_move[1])
+            return [self.eval_board(ar),last_move[0],last_move[1]]
         if type == 'b': # Maximal Player
-            max_s = (-1000000000, None, None)
+            max_s = [-1000000000, None, None]
             ps = self.lst_pieces_available(ar, type)
             random.shuffle(ps)
             for piece in ps:
@@ -165,19 +165,21 @@ class AI_Minimax(AI):
                 if lst_ai == []:
                     continue
                 for pos in lst_ai:
+                    img = deepcopy(ar[x][y])
                     cp_ar = deepcopy(ar)
                     cp_prev_move = deepcopy(prev_move)
                     self.move_AI_Minimax(cp_ar, (x+1,y+1),pos, cp_prev_move)
                     score = self.minimax(cp_ar,pieces,'w',alpha,beta,depth-1, ((x+1,y+1),pos),cp_prev_move)
+                    score[0] += Score_init[img][pos[0]-1][pos[1]-1]
                     if score[0] >= max_s[0]:
-                        max_s = (score[0],(x+1,y+1),pos)
+                        max_s = [score[0],(x+1,y+1),pos]
                     if alpha < max_s[0]:
                         alpha = max_s[0]
                     if alpha >= beta:
                         break
             return max_s
         else: # Minimal Player
-            min_s = (1000000000, None, None)
+            min_s = [1000000000, None, None]
             ps = self.lst_pieces_available(ar, type)
             random.shuffle(ps)
             for piece in ps:
@@ -186,12 +188,14 @@ class AI_Minimax(AI):
                 if lst_ai == []:
                     continue
                 for pos in lst_ai:
+                    img = deepcopy(ar[x][y])
                     cp_ar = deepcopy(ar)
                     cp_prev_move = deepcopy(prev_move)
                     self.move_AI_Minimax(cp_ar, (x+1,y+1),pos,cp_prev_move)
                     score = self.minimax(cp_ar,pieces,'b',alpha,beta,depth-1, ((x+1,y+1),pos),cp_prev_move)
+                    score[0] += Score_init[img][pos[0]-1][pos[1]-1]
                     if score[0] <= min_s[0]:
-                        min_s = (score[0],(x+1,y+1),pos)
+                        min_s = [score[0],(x+1,y+1),pos]
                     if beta > min_s[0]:
                         beta = min_s[0]
                     if alpha >= beta:

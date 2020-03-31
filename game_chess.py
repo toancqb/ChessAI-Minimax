@@ -257,7 +257,7 @@ class Game():
                 if pos_clicked != () and cl == 0:
                     pieces.selecting(pos_clicked)
                     st.append(pos_clicked)
-                    print_ar(pieces.ar)
+                    # print_ar(pieces.ar)
                 if pos_clicked != () and cl == 1:
                     if eq(st[0], pos_clicked):
                         cl -= 1
@@ -270,7 +270,7 @@ class Game():
                         cl -= 1
                         continue
                     player, cl, st = 1 - player, -1, []
-                    print_ar(pieces.ar)
+                    # print_ar(pieces.ar)
                     if pieces.is_checked(cplayer[player]):
                         if pieces.is_checkmate(cplayer[player]):
                             cmate = 1-player
@@ -280,6 +280,7 @@ class Game():
                 pieces.selecting(pos[1])
                 pieces.move(pos[1], pos[2])
                 print_ar(pieces.ar)
+                print(AI.eval_board(pieces.ar), pos[0],"\n")
                 player = 1 - player
                 if pieces.is_checked(cplayer[player]):
                     if pieces.is_checkmate(cplayer[player]):
