@@ -45,7 +45,7 @@ class Game():
         if option == 1:
             cmate = self.Game_player_vs_player(board, pieces)
         elif option == 2:
-            cmate = self.Game_player_vs_AI(board, pieces)
+            cmate = self.Game_player_vs_AI_Minimax(board, pieces)
         self.Game_Over(board, pieces, cmate)
 
         pygame.quit()
@@ -221,6 +221,64 @@ class Game():
             else: # player(AI) = 1
                 pos = AI.find_pos_random(pieces.ar, pieces, 'b')
                 pieces.move(pos[0], pos[1])
+                print_ar(pieces.ar)
+                player = 1 - player
+                if pieces.is_checked(cplayer[player]):
+                    if pieces.is_checkmate(cplayer[player]):
+                        cmate = 1-player
+                        running = False
+            board.draw_board(C[player])
+            pieces.draw_pieces()
+
+            pygame.display.flip()
+            self.clock.tick(30)
+        return cmate
+
+    def Game_player_vs_AI_Minimax(self, board, pieces):
+
+        cplayer = ['w', 'b']
+        C = [BLUE, BLACK]
+        player, cl, st, cmate = 0, -1, [], -1
+        AI = AI_Minimax(pieces.ar, pieces)
+        running = True
+        while running:
+            pos_clicked = ()
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    running = False
+                if event.type == MOUSEBUTTONDOWN:
+                    if player == 0 and pygame.mouse.get_pressed()[0]:
+                        pos_clicked = rev_rect(pygame.mouse.get_pos())
+                        cl += 1
+                        if not pieces.precond(pos_clicked, player) and cl == 0:
+                            cl -= 1
+                            continue
+            if player == 0:
+                if pos_clicked != () and cl == 0:
+                    pieces.selecting(pos_clicked)
+                    st.append(pos_clicked)
+                    print_ar(pieces.ar)
+                if pos_clicked != () and cl == 1:
+                    if eq(st[0], pos_clicked):
+                        cl -= 1
+                        continue
+                    if pieces.switch_piece(st[0], pos_clicked):
+                        cl, st = -1, []
+                        clean_selected(pieces.ar)
+                        continue
+                    if not pieces.move(st[0], pos_clicked):
+                        cl -= 1
+                        continue
+                    player, cl, st = 1 - player, -1, []
+                    print_ar(pieces.ar)
+                    if pieces.is_checked(cplayer[player]):
+                        if pieces.is_checkmate(cplayer[player]):
+                            cmate = 1-player
+                            running = False
+            else: # player(AI) = 1 ar,pieces,type,alpha,beta,depth, last_move):
+                pos = AI.minimax(pieces.ar,pieces,'b',-1000000000,1000000000,3,None,pieces.prev_move)
+                pieces.selecting(pos[1])
+                pieces.move(pos[1], pos[2])
                 print_ar(pieces.ar)
                 player = 1 - player
                 if pieces.is_checked(cplayer[player]):

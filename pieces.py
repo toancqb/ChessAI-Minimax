@@ -357,3 +357,123 @@ class Pieces(pygame.sprite.Sprite):
                             self.ar[i[0]][i[1]] = '..'
                             lst_ai.append((i[0]+1,i[1]+1))
         return lst_ai
+
+################## MiniMax Functions ###########################################
+
+    # def is_checked_AI_Minimax(self, ar, type):
+    #     p = king_position(ar, type)
+    #     x, y = p[0], p[1]
+    #     for i in range(8):
+    #         for j in range(8):
+    #             if self.ar[i][j] != '  ' and self.ar[i][j][0] != type:
+    #                 for pos in self.available_moves(self.ar[i][j], (i+1,j+1), self.ar[i][j][0]):
+    #                     if pos[0] == x and pos[1] == y:
+    #                         return True
+    #     return False
+    #
+    # def is_pos_not_checked_AI_Minimax(self, ar, p, type):
+    #     x, y = p[0]-1, p[1]-1
+    #     for i in range(8):
+    #         for j in range(8):
+    #             if ar[i][j] != '  ' and ar[i][j][0] != type:
+    #                 for pos in self.available_moves(ar[i][j], (i+1,j+1), ar[i][j][0]):
+    #                     if pos[0] == x and pos[1] == y:
+    #                         return False
+    #     return True
+    #
+    # def precond_castling_AI_Minimax(self, ar, type):
+    #     res = [0,0]
+    #     if not self.is_checked_AI_Minimax(ar,type) and not self.P[type+'k'].is_moved:
+    #         p = king_position(ar, type)
+    #         x, y = p[0], p[1]
+    #         if ar[x][y+1] == '  ' and ar[x][y+2] == '  ' and ar[x][y+3] == type+'r':
+    #             if self.is_pos_not_checked_AI_Minimax(ar, [x,y+1], type) and self.is_pos_not_checked_AI_Minimax(ar, [x,y+2], type):
+    #                 res[1] = 1
+    #         if ar[x][y-1] == '  ' and ar[x][y-2] == '  ' and ar[x][y-4] == type+'r':
+    #             if self.is_pos_not_checked_AI_Minimax(ar, [x,y-1], type) and self.is_pos_not_checked_AI_Minimax(ar, [x,y-2], type):
+    #                 res[0] = 1
+    #
+    #     return res
+    #
+    # def selecting_AI_Minimax(self, ar, p):
+    #     x, y = p[0]-1, p[1]-1
+    #     type = ar[x][y][0]
+    #     lst_ai = []
+    #     if self.is_checked_AI_Minimax(ar, type):
+    #         lst = self.available_moves(ar[x][y], p, type)
+    #         if ar[x][y][-1] == 'p':
+    #             tmp = self.prev_move.precond_en_passant(ar, x, y, ar[x][y][0])
+    #             if tmp != []:
+    #                 for i in tmp:
+    #                     if self.is_prevent_check(deepcopy(ar),x,y,i[0],i[1],'...'):
+    #                         ar[i[0]][i[1]] = '...'
+    #                         lst_ai.append((i[0]+1,i[1]+1))
+    #         if lst != []:
+    #             for i in lst:
+    #                 if ar[i[0]][i[1]] != '  ':
+    #                     if self.is_prevent_check(deepcopy(ar),x,y,i[0],i[1],'.' + deepcopy(ar[i[0]][i[1]])):
+    #                         ar[i[0]][i[1]] = '.' + ar[i[0]][i[1]]
+    #                         lst_ai.append((i[0]+1,i[1]+1))
+    #                 else:
+    #                     if self.is_prevent_check(deepcopy(ar),x,y,i[0],i[1],'..'):
+    #                         ar[i[0]][i[1]] = '..'
+    #                         lst_ai.append((i[0]+1,i[1]+1))
+    #     else:
+    #         lst = self.available_moves(ar[x][y], p, type)
+    #         if ar[x][y][-1] == 'k':
+    #             res = self.precond_castling_AI_Minimax(ar,type)
+    #             if res[0] == 1:
+    #                 lst.append((x+1,y-1))
+    #             if res[1] == 1:
+    #                 lst.append((x+1,y+3))
+    #         if ar[x][y][-1] == 'p':
+    #             tmp = self.prev_move.precond_en_passant(ar, x, y, type)
+    #             if tmp != []:
+    #                 for i in tmp:
+    #                     ar[i[0]][i[1]] = '...'
+    #                     lst_ai.append((i[0]+1,i[1]+1))
+    #         if lst != []:
+    #             for i in lst:
+    #                 if ar[i[0]][i[1]] != '  ':
+    #                     if self.is_prevent_check(deepcopy(ar),x,y,i[0],i[1],'.' + deepcopy(ar[i[0]][i[1]])):
+    #                         ar[i[0]][i[1]] = '.' + ar[i[0]][i[1]]
+    #                         lst_ai.append((i[0]+1,i[1]+1))
+    #                 else:
+    #                     if self.is_prevent_check(deepcopy(ar),x,y,i[0],i[1],'..'):
+    #                         ar[i[0]][i[1]] = '..'
+    #                         lst_ai.append((i[0]+1,i[1]+1))
+    #     return lst_ai
+    #
+    # def move_AI_Minimax(self, ar, r, rr):
+    #     a, b, c, d = r[0]-1, r[1]-1, rr[0]-1, rr[1]-1
+    #     type = ar[a][b][0]
+    #     if ar[a][b][-1] == 'k' or ar[a][b][-1] == 'r':
+    #         self.P[ar[a][b]].update_kpos([rr[0], rr[1]])
+    #
+    #     if ar[c][d][0] == '.':
+    #         if ar[a][b][-1] == 'k' and (b-d==2 or d-b==2):
+    #             if b - d == 2:
+    #                 self.prev_move.update(ar[a][b], (a,b), (c,d-2))
+    #                 self.castle_move((a,b),(c,d-2))
+    #             elif d - b == 2:
+    #                 self.prev_move.update(ar[a][b], (a,b), (c,d+1))
+    #                 self.castle_move((a,b),(c,d+1))
+    #         else:
+    #             self.prev_move.update(ar[a][b], (a,b), (c,d))
+    #             if ar[c][d] == '...':
+    #                 if type == 'b':
+    #                     ar[c-1][d] = '  '
+    #                 if type == 'w':
+    #                     ar[c+1][d] = '  '
+    #             ar[c][d] = deepcopy(ar[a][b])
+    #             ar[a][b] = '  '
+    #             if ar[c][d][-1] == 'p':
+    #                 if type == 'b' and c == 7:
+    #                     ar[c][d] = deepcopy('bq')
+    #                 elif type == 'w' and c == 0:
+    #                     ar[c][d] = deepcopy('wq')
+    #
+    #     else:
+    #         return 0
+    #     clean_selected(ar)
+    #     return 1
