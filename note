@@ -1,0 +1,24 @@
+
+wb (8,7) -> (6,8)
+Traceback (most recent call last):
+  File "game_chess.py", line 322, in <module>
+    t = Game()
+  File "game_chess.py", line 48, in __init__
+    cmate = self.Game_player_vs_AI_Minimax(board, pieces)
+  File "game_chess.py", line 253, in Game_player_vs_AI_Minimax
+    if not pieces.precond(pos_clicked, player) and cl == 0:
+  File "/home/crypt0/underground/projets/GChess/pieces.py", line 307, in precond
+    if self.ar[p[0]-1][p[1]-1] != '  ' and self.ar[p[0]-1][p[1]-1][0] == player:
+IndexError: list index out of range
+
+
+Traceback (most recent call last):
+  File "game_chess.py", line 322, in <module>
+    t = Game()
+  File "game_chess.py", line 48, in __init__
+    cmate = self.Game_player_vs_AI_Minimax(board, pieces)
+  File "game_chess.py", line 280, in Game_player_vs_AI_Minimax
+    pieces.selecting(pos[1])
+  File "/home/crypt0/underground/projets/GChess/pieces.py", line 148, in selecting
+    x, y = p[0]-1, p[1]-1
+TypeError: 'NoneType' object is not subscriptable
