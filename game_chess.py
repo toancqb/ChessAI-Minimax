@@ -146,7 +146,9 @@ class Game():
                         if not pieces.precond(pos_clicked, player) and cl == 0:
                             cl -= 1
                             continue
-
+            if pos_clicked != () and not check_valid(pos_clicked[0]-1, pos_clicked[1]-1):
+                cl -= 1
+                continue
             if pos_clicked != () and cl == 0:
                 pieces.selecting(pos_clicked)
                 st.append(pos_clicked)
@@ -197,6 +199,9 @@ class Game():
                             cl -= 1
                             continue
             if player == 0:
+                if pos_clicked != () and not check_valid(pos_clicked[0]-1, pos_clicked[1]-1):
+                    cl -= 1
+                    continue
                 if pos_clicked != () and cl == 0:
                     pieces.selecting(pos_clicked)
                     st.append(pos_clicked)
@@ -249,11 +254,15 @@ class Game():
                 if event.type == MOUSEBUTTONDOWN:
                     if player == 0 and pygame.mouse.get_pressed()[0]:
                         pos_clicked = rev_rect(pygame.mouse.get_pos())
+                        # print(pos_clicked)
                         cl += 1
                         if not pieces.precond(pos_clicked, player) and cl == 0:
                             cl -= 1
                             continue
             if player == 0:
+                if pos_clicked != () and not check_valid(pos_clicked[0]-1, pos_clicked[1]-1):
+                    cl -= 1
+                    continue
                 if pos_clicked != () and cl == 0:
                     pieces.selecting(pos_clicked)
                     st.append(pos_clicked)
@@ -271,7 +280,7 @@ class Game():
                         continue
                     last_pos = (st[0], pos_clicked)
                     player, cl, st = 1 - player, -1, []
-                    print("Is WK moved? ", pieces.prev_move.is_king_moved('w'))
+                    # print("Is WK moved? ", pieces.prev_move.is_king_moved('w'))
                     # print_ar(pieces.ar)
                     if pieces.is_checked(cplayer[player]):
                         if pieces.is_checkmate(cplayer[player]):

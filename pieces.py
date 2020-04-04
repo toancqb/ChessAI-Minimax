@@ -339,6 +339,8 @@ class Pieces(pygame.sprite.Sprite):
         return False
 
     def precond(self, p, player):
+        if not check_valid(p[0]-1,p[1]-1):
+            return False
         if player == 0:
             player = 'w'
         else:
