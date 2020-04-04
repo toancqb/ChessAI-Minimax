@@ -66,6 +66,13 @@ class PrevMove():
                 len -= 1
         return False
 
+    def is_king_moved(self, type):
+        if self.m != []:
+            for i in self.m:
+                if i[0] == type + 'k':
+                    return True
+        return False
+
     def print_prev_move(self):
         len = self.len - 1
         if self.m != []:
@@ -129,9 +136,41 @@ class Pieces(pygame.sprite.Sprite):
         for i in range(8):
             for j in range(8):
                 if self.ar[i][j] != '  ':
+                    CLR = GRIS_BRIGHT
+                    if (i + j) % 2:
+                        CLR = GRIS
                     if self.ar[i][j] == '..' or self.ar[i][j] == '...':
-                        pygame.draw.circle(self.screen, RED, cal_rect(0, i+1, j+1), CIRCLE_RADIUS)
+                        # pygame.draw.circle(self.screen, RED, cal_rect(0, i+1, j+1), CIRCLE_RADIUS)
+                        pygame.draw.rect(
+                                self.screen, CLR,
+                                (PIECE_SIZE*(j+1), PIECE_SIZE*(i+1), PIECE_SIZE, PIECE_SIZE))
                     elif self.ar[i][j][0] == '.':
+                        pygame.draw.rect(
+                                self.screen, CLR,
+                                (PIECE_SIZE*(j+1), PIECE_SIZE*(i+1), PIECE_SIZE, PIECE_SIZE))
+                        self.P[self.ar[i][j][1:]].rect = cal_rect(1, i+1,j+1)
+                        self.screen.blit(self.P[self.ar[i][j][1:]].surf, cal_rect(1, i+1,j+1))
+                    else:
+                        self.P[self.ar[i][j]].rect = cal_rect(1, i+1,j+1)
+                        self.screen.blit(self.P[self.ar[i][j]].surf, cal_rect(1, i+1,j+1))
+
+    def draw_pieces_upgrade(self, pos):
+        for i in range(8):
+            for j in range(8):
+                if self.ar[i][j] != '  ':
+                    if (i + j) % 2 == 0:
+                        CLR = GRIS_BRIGHT
+                    else:
+                        CLR = GRIS
+                    if self.ar[i][j] == '..' or self.ar[i][j] == '...':
+                        # pygame.draw.circle(self.screen, RED, cal_rect(0, i+1, j+1), CIRCLE_RADIUS)
+                        pygame.draw.rect(
+                                self.screen, CLR,
+                                (PIECE_SIZE*(j+1), PIECE_SIZE*(i+1), PIECE_SIZE, PIECE_SIZE))
+                    elif self.ar[i][j][0] == '.':
+                        pygame.draw.rect(
+                                self.screen, CLR,
+                                (PIECE_SIZE*(j+1), PIECE_SIZE*(i+1), PIECE_SIZE, PIECE_SIZE))
                         self.P[self.ar[i][j][1:]].rect = cal_rect(1, i+1,j+1)
                         self.screen.blit(self.P[self.ar[i][j][1:]].surf, cal_rect(1, i+1,j+1))
                     else:

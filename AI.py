@@ -10,6 +10,7 @@ class AI():
     def __init__(self, ar, pieces):
         self.ar = ar
         self.pieces = pieces
+        self.P = pieces.P
         self.ref = {
             'p': 10,
             'n': 30,
@@ -43,7 +44,7 @@ class AI():
         for i in range(8):
             for j in range(8):
                 if ar[i][j] != '  ' and ar[i][j][0] != type:
-                    for pos in self.pieces.P[ar[i][j]].a_moves(ar,(i+1,j+1),ar[i][j][0]):
+                    for pos in self.P[ar[i][j]].a_moves(ar,(i+1,j+1),ar[i][j][0]):
                         if pos[0] == x and pos[1] == y:
                             return True
         return False
@@ -53,14 +54,14 @@ class AI():
         for i in range(8):
             for j in range(8):
                 if ar[i][j] != '  ' and ar[i][j][0] != type:
-                    for pos in self.pieces.P[ar[i][j]].a_moves(ar,(i+1,j+1),ar[i][j][0]):
+                    for pos in self.P[ar[i][j]].a_moves(ar,(i+1,j+1),ar[i][j][0]):
                         if pos[0] == x and pos[1] == y:
                             return False
         return True
 
-    def precond_castling_AI_Move(self, ar, type):
+    def precond_castling_AI_Move(self, ar, type, prev_move):
         res = [0,0]
-        if not self.is_checked_AI_Move(ar,type) and not self.pieces.P[type+'k'].is_moved:#<---
+        if not self.is_checked_AI_Move(ar,type) and not prev_move.is_king_moved(type):#<---
             p = king_position(ar, type)
             x, y = p[0], p[1]
             if check_valid(y+1,y+3) and ar[x][y+1] == '  ' and ar[x][y+2] == '  ' and ar[x][y+3] == type+'r':
@@ -76,16 +77,16 @@ class AI():
         type = ar[a][b][0]
         ar[c][d] = m
         prev_move.move(ar,a,b,c,d)
-        return not prev_move.is_checked(ar, self.pieces.P, type)
+        return not prev_move.is_checked(ar, self.P, type)
 
 
     def selecting_AI_Move(self, ar, p, prev_move):
         x, y = p[0]-1, p[1]-1
         type = ar[x][y][0]
-        lst = self.pieces.P[ar[x][y]].a_moves(ar, p, type) # Use as independent functions
+        lst = self.P[ar[x][y]].a_moves(ar, p, type) # Use as independent functions
         lst_ai = []
         if ar[x][y][-1] == 'k':
-            res = self.precond_castling_AI_Move(ar,type)
+            res = self.precond_castling_AI_Move(ar,type, prev_move)
             if res[0] == 1:
                 lst.append((x,y-2))
             if res[1] == 1:

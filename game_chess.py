@@ -269,7 +269,9 @@ class Game():
                     if not pieces.move(st[0], pos_clicked):
                         cl -= 1
                         continue
+                    last_pos = (st[0], pos_clicked)
                     player, cl, st = 1 - player, -1, []
+                    print("Is WK moved? ", pieces.prev_move.is_king_moved('w'))
                     # print_ar(pieces.ar)
                     if pieces.is_checked(cplayer[player]):
                         if pieces.is_checkmate(cplayer[player]):
@@ -281,6 +283,7 @@ class Game():
                 pieces.move(pos[1], pos[2])
                 print_ar(pieces.ar)
                 print(AI.eval_board(pieces.ar), pos[0],"\n")
+                last_pos = (pos[1], pos[2])
                 player = 1 - player
                 if pieces.is_checked(cplayer[player]):
                     if pieces.is_checkmate(cplayer[player]):
