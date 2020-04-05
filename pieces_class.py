@@ -12,8 +12,6 @@ class King():
         self.surf = pygame.transform.scale(self.surf, (PIECE_SIZE, PIECE_SIZE))
         self.rect = rect
         self.type = type
-        self.is_moved = False
-        self.k_pos = p
 
     def a_moves(self, ar, p, type):
         x, y, lst = p[0]-1, p[1]-1, []
@@ -25,9 +23,6 @@ class King():
                     lst.append((nx, ny))
         return lst
 
-    def update_kpos(self, p):
-        self.is_moved = True
-        self.k_pos = p
 
 class Queen(King):
     def __init__(self, surf, rect, type, p):
@@ -77,7 +72,6 @@ class Bishop(King):
 class Rook(King):
     def __init__(self, surf, rect, type, p):
         super(Rook, self).__init__(surf, rect, type, p)
-        self.is_moved = False
 
     def a_moves(self, ar, p, type):
         x, y, lst = p[0]-1, p[1]-1, []
@@ -97,8 +91,6 @@ class Rook(King):
 
         return lst
 
-    def update_kpos(self, p):
-        self.is_moved = True
 
 class Knight(King):
     def __init__(self, surf, rect, type, p):

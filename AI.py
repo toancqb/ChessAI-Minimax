@@ -67,7 +67,7 @@ class AI():
             if check_valid(y+1,y+3) and ar[x][y+1] == '  ' and ar[x][y+2] == '  ' and ar[x][y+3] == type+'r':
                 if self.is_pos_not_checked_AI_Move(ar, [x,y+1], type) and self.is_pos_not_checked_AI_Move(ar, [x,y+2], type):
                     res[1] = 1
-            if check_valid(y-1,y-3) and ar[x][y-1] == '  ' and ar[x][y-2] == '  ' and ar[x][y-4] == type+'r':
+            if check_valid(y-1,y-4) and ar[x][y-1] == '  ' and ar[x][y-2] == '  ' and ar[x][y-3] == '  ' and ar[x][y-4] == type+'r':
                 if self.is_pos_not_checked_AI_Move(ar, [x,y-1], type) and self.is_pos_not_checked_AI_Move(ar, [x,y-2], type):
                     res[0] = 1
 
@@ -95,7 +95,8 @@ class AI():
             tmp = prev_move.precond_en_passant(ar, x, y, type)
             if tmp != []:
                 for i in tmp:
-                    lst_ai.append((i[0]+1,i[1]+1,'...'))
+                    if self.is_prevent_check_AI_Move(deepcopy(ar),x,y,i[0],i[1],'...',prev_move):
+                        lst_ai.append((i[0]+1,i[1]+1,'...'))
         if lst != []:
             for i in lst:
                 if ar[i[0]][i[1]] != '  ':

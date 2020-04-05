@@ -133,6 +133,7 @@ class Game():
         cplayer = ['w', 'b']
         C = [BLUE, BLACK]
         player, cl, st, cmate = 0, -1, [], -1
+        last_pos = ()
         running = True
         while running:
             pos_clicked = ()
@@ -161,20 +162,19 @@ class Game():
                     cl, st = -1, []
                     clean_selected(pieces.ar)
                     continue
-                if not pieces.move(st[0], pos_clicked):
+                if not pieces.move(pieces.ar, st[0], pos_clicked):
                     cl -= 1
                     continue
+                last_pos = (st[0], pos_clicked)
                 player, cl, st = 1 - player, -1, []
                 print_ar(pieces.ar)
-                print("Is Checked ? ", pieces.is_checked(cplayer[player]))
-                print("Is CheckMate ? ", pieces.is_checkmate(cplayer[player]))
-                if pieces.is_checked(cplayer[player]):
-                    if pieces.is_checkmate(cplayer[player]):
+                if pieces.is_checked(pieces.ar, cplayer[player]):
+                    if pieces.is_checkmate(pieces.ar, cplayer[player]):
                         cmate = 1-player
                         running = False
 
             board.draw_board(C[player])
-            pieces.draw_pieces()
+            pieces.draw_pieces_upgrade(last_pos)
 
             pygame.display.flip()
             self.clock.tick(30)
@@ -184,6 +184,7 @@ class Game():
         cplayer = ['w', 'b']
         C = [BLUE, BLACK]
         player, cl, st, cmate = 0, -1, [], -1
+        last_pos = ()
         AI = AI_stupid(pieces.ar, pieces)
         running = True
         while running:
@@ -214,9 +215,10 @@ class Game():
                         cl, st = -1, []
                         clean_selected(pieces.ar)
                         continue
-                    if not pieces.move(st[0], pos_clicked):
+                    if not pieces.move(pieces.ar, st[0], pos_clicked):
                         cl -= 1
                         continue
+                    last_pos = (st[0], pos_clicked)
                     player, cl, st = 1 - player, -1, []
                     print_ar(pieces.ar)
                     if pieces.is_checked(cplayer[player]):
@@ -225,15 +227,17 @@ class Game():
                             running = False
             else: # player(AI) = 1
                 pos = AI.find_pos_random(pieces.ar, pieces, 'b')
-                pieces.move(pos[0], pos[1])
+                pieces.move(pieces.ar, pos[0], pos[1])
                 print_ar(pieces.ar)
                 player = 1 - player
+                last_pos = (pos[0], pos[1])
                 if pieces.is_checked(cplayer[player]):
                     if pieces.is_checkmate(cplayer[player]):
                         cmate = 1-player
                         running = False
             board.draw_board(C[player])
-            pieces.draw_pieces()
+            # pieces.draw_pieces()
+            pieces.draw_pieces_upgrade(last_pos)
 
             pygame.display.flip()
             self.clock.tick(30)
@@ -244,6 +248,7 @@ class Game():
         cplayer = ['w', 'b']
         C = [BLUE, BLACK]
         player, cl, st, cmate = 0, -1, [], -1
+        last_pos = ()
         AI = AI_Minimax(pieces.ar, pieces)
         running = True
         while running:
@@ -275,31 +280,32 @@ class Game():
                         cl, st = -1, []
                         clean_selected(pieces.ar)
                         continue
-                    if not pieces.move(st[0], pos_clicked):
+                    if not pieces.move(pieces.ar, st[0], pos_clicked):
                         cl -= 1
                         continue
                     last_pos = (st[0], pos_clicked)
                     player, cl, st = 1 - player, -1, []
                     # print("Is WK moved? ", pieces.prev_move.is_king_moved('w'))
                     # print_ar(pieces.ar)
-                    if pieces.is_checked(cplayer[player]):
-                        if pieces.is_checkmate(cplayer[player]):
+                    if pieces.is_checked(pieces.ar, cplayer[player]):
+                        if pieces.is_checkmate(pieces.ar, cplayer[player]):
                             cmate = 1-player
                             running = False
             else: # player(AI) = 1 ar,pieces,type,alpha,beta,depth, last_move):
                 pos = AI.minimax(pieces.ar,pieces,'b',-1000000000,1000000000,3,None,pieces.prev_move)
                 pieces.selecting(pos[1])
-                pieces.move(pos[1], pos[2])
+                pieces.move(pieces.ar, pos[1], pos[2])
                 print_ar(pieces.ar)
                 print(AI.eval_board(pieces.ar), pos[0],"\n")
                 last_pos = (pos[1], pos[2])
                 player = 1 - player
-                if pieces.is_checked(cplayer[player]):
-                    if pieces.is_checkmate(cplayer[player]):
+                if pieces.is_checked(pieces.ar, cplayer[player]):
+                    if pieces.is_checkmate(pieces.ar, cplayer[player]):
                         cmate = 1-player
                         running = False
             board.draw_board(C[player])
-            pieces.draw_pieces()
+            # pieces.draw_pieces()
+            pieces.draw_pieces_upgrade(last_pos)
 
             pygame.display.flip()
             self.clock.tick(30)
