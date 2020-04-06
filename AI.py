@@ -50,7 +50,7 @@ class AI():
         return False
 
     def is_pos_not_checked_AI_Move(self, ar, p, type): #<---
-        x, y = p[0]-1, p[1]-1
+        x, y = p[0], p[1]
         for i in range(8):
             for j in range(8):
                 if ar[i][j] != '  ' and ar[i][j][0] != type:
