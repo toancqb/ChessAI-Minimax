@@ -72,7 +72,7 @@ class Game():
         )
         txt3rect = txt3.get_rect()
 
-        ADDCLOUD = pygame.USEREVENT + 3
+        ADDCLOUD = pygame.USEREVENT + 1
         pygame.time.set_timer(ADDCLOUD, 2000)
 
         clouds_decor = pygame.sprite.Group()
@@ -308,7 +308,7 @@ class Game():
             pieces.draw_pieces_upgrade(last_pos)
 
             pygame.display.flip()
-            self.clock.tick(30)
+            self.clock.tick(10)
         return cmate
 
     def Game_Over(self, board, pieces, cmate):

@@ -79,6 +79,30 @@ class AI():
         prev_move.move(ar,a,b,c,d)
         return not prev_move.is_checked(ar, self.P, type)
 
+    def is_checkmate_AI_Move(self, ar, type, prev_move):
+        count = 0
+        if self.is_checked_AI_Move(ar, type):
+            for x in range(8):
+                for y in range(8):
+                    if ar[x][y][0] == type:
+                        lst = self.P[ar[x][y]].a_moves(ar,(x+1,y+1),type)
+                        if ar[x][y][-1] == 'p':
+                            tmp = prev_move.precond_en_passant(ar, x, y, type)
+                            if tmp != []:
+                                for i in tmp:
+                                    if self.is_prevent_check_AI_Move(deepcopy(ar),x,y,i[0],i[1],'...',prev_move):
+                                        return False
+                        if lst != []:
+                            for i in lst:
+                                if ar[i[0]][i[1]] != '  ':
+                                    if self.is_prevent_check_AI_Move(deepcopy(ar),x,y,i[0],i[1],'.' + deepcopy(ar[i[0]][i[1]]),prev_move):
+                                        return False
+                                else:
+                                    if self.is_prevent_check_AI_Move(deepcopy(ar),x,y,i[0],i[1],'..',prev_move):
+                                        return False
+            return True
+        return False
+
 
     def selecting_AI_Move(self, ar, p, prev_move):
         x, y = p[0]-1, p[1]-1
@@ -171,8 +195,11 @@ class AI_Minimax(AI):
                     cp_ar = deepcopy(ar)
                     cp_prev_move = deepcopy(prev_move)
                     self.move_AI_Minimax(cp_ar, (x+1,y+1),pos, cp_prev_move)
-                    score = self.minimax(cp_ar,pieces,'w',alpha,beta,depth-1, ((x+1,y+1),pos),cp_prev_move)
-                    score[0] += Score_init[img][pos[0]-1][pos[1]-1]
+                    if self.is_checkmate_AI_Move(cp_ar, 'w',prev_move):
+                        score = [10000000000000,(x+1,y+1),pos]
+                    else:
+                        score = self.minimax(cp_ar,pieces,'w',alpha,beta,depth-1, ((x+1,y+1),pos),cp_prev_move)
+                        score[0] += Score_init[img][pos[0]-1][pos[1]-1]
                     if score[0] >= max_s[0]:
                         max_s = [score[0],(x+1,y+1),pos]
                     if alpha < max_s[0]:
@@ -194,8 +221,11 @@ class AI_Minimax(AI):
                     cp_ar = deepcopy(ar)
                     cp_prev_move = deepcopy(prev_move)
                     self.move_AI_Minimax(cp_ar, (x+1,y+1),pos,cp_prev_move)
-                    score = self.minimax(cp_ar,pieces,'b',alpha,beta,depth-1, ((x+1,y+1),pos),cp_prev_move)
-                    score[0] += Score_init[img][pos[0]-1][pos[1]-1]
+                    if self.is_checkmate_AI_Move(cp_ar, 'b', prev_move):
+                        score = [-10000000000000,(x+1,y+1),pos]
+                    else:
+                        score = self.minimax(cp_ar,pieces,'b',alpha,beta,depth-1, ((x+1,y+1),pos),cp_prev_move)
+                        score[0] += Score_init[img][pos[0]-1][pos[1]-1]
                     if score[0] <= min_s[0]:
                         min_s = [score[0],(x+1,y+1),pos]
                     if beta > min_s[0]:

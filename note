@@ -22,3 +22,14 @@ Traceback (most recent call last):
   File "/home/crypt0/underground/projets/GChess/pieces.py", line 148, in selecting
     x, y = p[0]-1, p[1]-1
 TypeError: 'NoneType' object is not subscriptable
+
+Traceback (most recent call last):
+  File "game_chess.py", line 340, in <module>
+    t = Game()
+  File "game_chess.py", line 48, in __init__
+    cmate = self.Game_player_vs_AI_Minimax(board, pieces)
+  File "game_chess.py", line 296, in Game_player_vs_AI_Minimax
+    pieces.selecting(pos[1])
+  File "/home/crypt0/underground/projets/GChess/pieces.py", line 199, in selecting
+    x, y = p[0]-1, p[1]-1
+TypeError: 'NoneType' object is not subscriptable
