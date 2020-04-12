@@ -1,3 +1,10 @@
+###############################
+## Author: TRAN Quang Toan   ##
+## Project Game Chess        ##
+## Version 2                 ##
+## 12 Apr 2020               ##
+###############################
+
 from define import *
 
 def cal_rect(bool, rect0, rect1):

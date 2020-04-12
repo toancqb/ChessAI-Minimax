@@ -1,6 +1,13 @@
+###############################
+## Author: TRAN Quang Toan   ##
+## Project Game Chess        ##
+## Version 2                 ##
+## 12 Apr 2020               ##
+###############################
+
+
 import pygame
 import os.path
-
 
 from pygame.locals import (
     MOUSEBUTTONDOWN,
@@ -110,7 +117,7 @@ Score_init_WB = [
     [ -1, 0.5, 0, 0, 0, 0, 0.5, -1],
     [ -2, -1, -1, -1, -1, -1, -1, -2]
 ]
-Score_init_BK = [
+Score_init_BK1 = [
     [ 2, 3, 1, 0, 0, 1, 3, 2],
     [ 2, 2, 0, 0, 0, 0, 2, 2],
     [-1,-2,-2,-2,-2,-2,-2,-1],
@@ -120,7 +127,7 @@ Score_init_BK = [
     [-3,-4,-4,-5,-5,-4,-4,-3],
     [-3,-4,-4,-5,-5,-4,-4,-3]
 ]
-Score_init_BQ = [
+Score_init_BQ1 = [
     [  -2,  -1,  -1,-0.5,-0.5,  -1,  -1,  -2],
     [  -1,   0, 0.5,   0,   0,   0,   0,  -1],
     [  -1, 0.5, 0.5, 0.5, 0.5, 0.5,   0,  -1],
@@ -130,7 +137,7 @@ Score_init_BQ = [
     [  -1,   0,   0,   0,   0,   0,   0,  -1],
     [  -2,  -1,  -1,-0.5,-0.5,  -1,  -1,  -2]
 ]
-Score_init_BR = [
+Score_init_BR1 = [
     [ 0, 0, 0, 0.5, 0.5, 0, 0, 0],
     [ -0.5, 0, 0, 0, 0, 0, 0, -0.5],
     [ -0.5, 0, 0, 0, 0, 0, 0, -0.5],
@@ -140,7 +147,7 @@ Score_init_BR = [
     [ 0.5, 1, 1, 1, 1, 1, 1, 0.5],
     [ 0, 0, 0, 0, 0, 0, 0, 0],
 ]
-Score_init_BN = [
+Score_init_BN1 = [
     [ -5, -4, -3, -3, -3, -3, -4, -5],
     [ -4, -2, 0, 0.5, 0.5, 0, -2, -4],
     [ -3, 0.5, 1, 1.5, 1.5, 1, 0.5, -3],
@@ -150,7 +157,7 @@ Score_init_BN = [
     [ -4, -2, 0, 0, 0, 0, -2, -4],
     [ -5, -4, -3, -3, -3, -3, -4, -5]
 ]
-Score_init_BP = [
+Score_init_BP1 = [
     [ 0, 0, 0, 0, 0, 0, 0, 0],
     [ 0.5, 1, 1, -2, -2, 1, 1, 0.5],
     [ 0.5, -0.5, -1, 0, 0,-1, -0.5, 0.5],
@@ -160,7 +167,7 @@ Score_init_BP = [
     [ 5, 5, 5, 5, 5, 5, 5, 5],
     [ 0, 0, 0, 0, 0, 0, 0, 0]
 ]
-Score_init_BB = [
+Score_init_BB1 = [
     [ -2, -1, -1, -1, -1, -1, -1, -2],
     [ -1, 0.5, 0, 0, 0, 0, 0.5, -1],
     [ -1, 1, 1, 1, 1, 1, 1, -1],
@@ -170,6 +177,13 @@ Score_init_BB = [
     [ -1, 0, 0, 0, 0, 0, 0, -1],
     [ -2, -1, -1, -1, -1, -1, -1, -2],
 ]
+
+Score_init_BK = [i[::-1] for i in Score_init_BK1]
+Score_init_BQ = [i[::-1] for i in Score_init_BQ1]
+Score_init_BR = [i[::-1] for i in Score_init_BR1]
+Score_init_BB = [i[::-1] for i in Score_init_BB1]
+Score_init_BN = [i[::-1] for i in Score_init_BN1]
+Score_init_BP = [i[::-1] for i in Score_init_BP1]
 
 Score_init = {
     'wk': Score_init_WK,
