@@ -87,7 +87,6 @@ class AI():
         return not prev_move.is_checked(ar, self.P, type)
 
     def is_checkmate_AI_Move(self, ar, type, prev_move):
-        count = 0
         if self.is_checked_AI_Move(ar, type):
             for x in range(8):
                 for y in range(8):
@@ -188,6 +187,7 @@ class AI_Minimax(AI):
     def minimax(self,ar,pieces,type,alpha,beta,depth, last_move,prev_move):
         if depth == 0:
             return [self.eval_board(ar),last_move[0],last_move[1]]
+        draw = True
         if type == 'b': # Maximal Player
             max_s = [-1000000000, None, None]
             ps = self.lst_pieces_available(ar, type)
@@ -197,6 +197,7 @@ class AI_Minimax(AI):
                 lst_ai = self.selecting_AI_Move(ar, (x+1, y+1),prev_move)
                 if lst_ai == []:
                     continue
+                draw = False
                 for pos in lst_ai:
                     img = deepcopy(ar[x][y])
                     cp_ar = deepcopy(ar)
@@ -213,6 +214,8 @@ class AI_Minimax(AI):
                         alpha = max_s[0]
                     if alpha >= beta:
                         break
+            if draw:
+                return [0, None, None]
             return max_s
         else: # Minimal Player
             min_s = [1000000000, None, None]
@@ -223,6 +226,7 @@ class AI_Minimax(AI):
                 lst_ai = self.selecting_AI_Move(ar, (x+1, y+1),prev_move)
                 if lst_ai == []:
                     continue
+                draw = False
                 for pos in lst_ai:
                     img = deepcopy(ar[x][y])
                     cp_ar = deepcopy(ar)
@@ -239,6 +243,8 @@ class AI_Minimax(AI):
                         beta = min_s[0]
                     if alpha >= beta:
                         break
+            if draw:
+                return [0, None, None]
             return min_s
 
 
@@ -247,12 +253,13 @@ class AI_stupid(AI):
         super().__init__(ar,pieces)
 
     def find_pos_random(self, ar, pieces, type):
-        lst_pieces = self.lst_pieces_available(ar, pieces, type)
-        if lst_pieces != []:
-            random.shuffle(lst_pieces)
-            for p in lst_pieces:
-                lst_ai = pieces.selecting_AI((p[1]+1, p[2]+1))
-                if lst_ai == []:
-                    continue
-                random.shuffle(lst_ai)
-                return ((p[1]+1,p[2]+1), lst_ai[0])
+        lst_pieces = self.lst_pieces_available(ar, type)
+        random.shuffle(lst_pieces)
+        for p in lst_pieces:
+            lst_ai = pieces.selecting_AI((p[1]+1, p[2]+1))
+            if lst_ai == []:
+                continue
+            random.shuffle(lst_ai)
+            return ((p[1]+1,p[2]+1), lst_ai[0])
+        return None
+

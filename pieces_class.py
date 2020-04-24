@@ -120,7 +120,6 @@ class Knight(King):
 class Pawn(King):
     def __init__(self, surf, rect, type, p):
         super(Pawn, self).__init__(surf, rect, type, p)
-        self.is_jumped = False
 
     def a_moves(self, ar, p, type):
         x, y, lst = p[0]-1, p[1]-1, []
@@ -142,17 +141,7 @@ class Pawn(King):
             lst.append((x+sign*1, y+1))
 
         return lst
-
-    def update_pawn(self, a, c):
-        if self.type == 'b':
-            cond = a < c - 1
-        else:
-            cond = a > c + 1
-        if cond:
-            self.is_jumped = True
-        else:
-            self.is_jumped = False
-
+    
 class Cloud(pygame.sprite.Sprite):
     def __init__(self):
         super(Cloud, self).__init__()
