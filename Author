@@ -1,13 +1,6 @@
-
 ###############################
 ## Author: TRAN Quang Toan   ##
 ## Project Game Chess        ##
 ## Version 2                 ##
 ## 12 Apr 2020               ##
 ###############################
-
-Game Chess 
-Using python3, pygame
-
-*) To Compile the Code:
-$> python3 game_chess.py
